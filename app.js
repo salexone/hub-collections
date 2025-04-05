@@ -1,4 +1,4 @@
-// ✅ Your Firebase config
+// Your Firebase config
 const firebaseConfig = {
   apiKey: "AIzaSyCUpzUXiwihGhBzGfGcEzcm1-Zf5gAyj5A",
   authDomain: "hubcollections-a001e.firebaseapp.com",
@@ -9,10 +9,8 @@ const firebaseConfig = {
   measurementId: "G-62C119XRJ9"
 };
 
-// Initialize Firebase
-// Initialize Firebase
+// Init Firebase
 firebase.initializeApp(firebaseConfig);
-
 const auth = firebase.auth();
 const db = firebase.firestore();
 
@@ -20,6 +18,7 @@ const loginBtn = document.getElementById("login-btn");
 const logoutBtn = document.getElementById("logout-btn");
 const userInfo = document.getElementById("user-info");
 
+// Handle login/logout
 loginBtn.onclick = () => {
   const provider = new firebase.auth.GoogleAuthProvider();
   auth.signInWithPopup(provider).catch(console.error);
@@ -32,15 +31,17 @@ auth.onAuthStateChanged(user => {
     userInfo.textContent = `Logged in as ${user.displayName}`;
     loginBtn.style.display = "none";
     logoutBtn.style.display = "inline";
-    loadDVDs(user.uid);
+    loadFilms(user.uid);
   } else {
     userInfo.textContent = "Not logged in";
     loginBtn.style.display = "inline";
     logoutBtn.style.display = "none";
+    document.getElementById("movie-list").innerHTML = "";
   }
 });
 
-async function loadDVDs(userId) {
+// Load films from Firestore
+async function loadFilms(userId) {
   const snapshot = await db.collection("films")
     .where("ownerId", "==", userId).get();
 
@@ -54,5 +55,3 @@ async function loadDVDs(userId) {
     list.appendChild(li);
   });
 }
-
-window.onload = loadDVDs;
