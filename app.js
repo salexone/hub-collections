@@ -1,22 +1,31 @@
-// API Gateway URL from AWS
-const API_URL = "https://hdub22bv8f.execute-api.eu-north-1.amazonaws.com/dev/movies-api";
+// 🔥 Replace this config with YOUR Firebase config from Firebase Console
+const firebaseConfig = {
+  apiKey: "AIzaSyCUpzUXiwihGhBzGfGcEzcm1-Zf5gAyj5A",
+  authDomain: "AIzaSyCUpzUXiwihGhBzGfGcEzcm1-Zf5gAyj5A",
+  projectId: "AIzaSyCUpzUXiwihGhBzGfGcEzcm1-Zf5gAyj5A",
+  storageBucket: "AIzaSyCUpzUXiwihGhBzGfGcEzcm1-Zf5gAyj5A",
+  messagingSenderId: "AIzaSyCUpzUXiwihGhBzGfGcEzcm1-Zf5gAyj5A",
+  appId: "G-62C119XRJ9"
+};
 
-async function loadMovies() {
-    try {
-        const response = await fetch(API_URL);
-        const movies = await response.json();
+// Initialize Firebase
+firebase.initializeApp(firebaseConfig);
 
-        const movieList = document.getElementById("movie-list");
-        movieList.innerHTML = "";
+// Get Firestore
+const db = firebase.firestore();
 
-        movies.forEach(movie => {
-            const li = document.createElement("li");
-            li.textContent = `${movie.title} - ${movie.genre}`;
-            movieList.appendChild(li);
-        });
-    } catch (error) {
-        console.error("Error fetching movies:", error);
-    }
+// Load and display DVDs
+async function loadDVDs() {
+  const snapshot = await db.collection("dvds").get();
+  const list = document.getElementById("movie-list");
+  list.innerHTML = "";
+
+  snapshot.forEach(doc => {
+    const data = doc.data();
+    const li = document.createElement("li");
+    li.textContent = `${data.title} (${data.year}) - ${data.genre}`;
+    list.appendChild(li);
+  });
 }
 
-window.onload = loadMovies;
+window.onload = loadDVDs;
