@@ -1,12 +1,16 @@
 // 🔥 Replace this config with YOUR Firebase config from Firebase Console
 const firebaseConfig = {
+
   apiKey: "AIzaSyCUpzUXiwihGhBzGfGcEzcm1-Zf5gAyj5A",
-  authDomain: "AIzaSyCUpzUXiwihGhBzGfGcEzcm1-Zf5gAyj5A",
-  projectId: "AIzaSyCUpzUXiwihGhBzGfGcEzcm1-Zf5gAyj5A",
-  storageBucket: "AIzaSyCUpzUXiwihGhBzGfGcEzcm1-Zf5gAyj5A",
-  messagingSenderId: "AIzaSyCUpzUXiwihGhBzGfGcEzcm1-Zf5gAyj5A",
-  appId: "G-62C119XRJ9"
+  authDomain: "hubcollections-a001e.firebaseapp.com",
+  projectId: "hubcollections-a001e",
+  storageBucket: "hubcollections-a001e.firebasestorage.app",
+  messagingSenderId: "765474227726",
+  appId: "1:765474227726:web:480d8f30ed57cdf77e5e5f",
+  measurementId: "G-62C119XRJ9"
+
 };
+
 
 // Initialize Firebase
 firebase.initializeApp(firebaseConfig);
