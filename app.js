@@ -10,25 +10,49 @@ const firebaseConfig = {
 };
 
 // Initialize Firebase
+// Initialize Firebase
 firebase.initializeApp(firebaseConfig);
+
+const auth = firebase.auth();
 const db = firebase.firestore();
 
-// Load DVDs from Firestore
-async function loadDVDs() {
-  try {
-    const snapshot = await db.collection("dvds").get();
-    const list = document.getElementById("movie-list");
-    list.innerHTML = "";
+const loginBtn = document.getElementById("login-btn");
+const logoutBtn = document.getElementById("logout-btn");
+const userInfo = document.getElementById("user-info");
 
-    snapshot.forEach(doc => {
-      const data = doc.data();
-      const li = document.createElement("li");
-      li.textContent = `${data.title} (${data.year}) - ${data.genre}`;
-      list.appendChild(li);
-    });
-  } catch (error) {
-    console.error("Error loading DVDs:", error);
+loginBtn.onclick = () => {
+  const provider = new firebase.auth.GoogleAuthProvider();
+  auth.signInWithPopup(provider).catch(console.error);
+};
+
+logoutBtn.onclick = () => auth.signOut();
+
+auth.onAuthStateChanged(user => {
+  if (user) {
+    userInfo.textContent = `Logged in as ${user.displayName}`;
+    loginBtn.style.display = "none";
+    logoutBtn.style.display = "inline";
+    loadDVDs(user.uid);
+  } else {
+    userInfo.textContent = "Not logged in";
+    loginBtn.style.display = "inline";
+    logoutBtn.style.display = "none";
   }
+});
+
+async function loadDVDs(userId) {
+  const snapshot = await db.collection("films")
+    .where("ownerId", "==", userId).get();
+
+  const list = document.getElementById("movie-list");
+  list.innerHTML = "";
+
+  snapshot.forEach(doc => {
+    const data = doc.data();
+    const li = document.createElement("li");
+    li.textContent = `${data.title} (${data.year}) - ${data.genre}`;
+    list.appendChild(li);
+  });
 }
 
 window.onload = loadDVDs;
