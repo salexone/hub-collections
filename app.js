@@ -1,5 +1,5 @@
 // API Gateway URL from AWS
-const API_URL = "https://hdub22bv8f.execute-api.eu-north-1.amazonaws.com";
+const API_URL = "https://hdub22bv8f.execute-api.eu-north-1.amazonaws.com/dev/movies-api";
 
 async function loadMovies() {
     try {
