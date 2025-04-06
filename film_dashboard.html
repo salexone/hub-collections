@@ -3,95 +3,115 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Film Dashboard</title>
+  <title>🎬 My Film Collection</title>
   <style>
     body {
-      font-family: sans-serif;
+      font-family: 'Segoe UI', sans-serif;
+      background: #f0f2f5;
       margin: 0;
       padding: 20px;
-      background: #fafafa;
     }
-    header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 20px;
+    h1 {
+      text-align: center;
+      color: #333;
     }
-    button {
-      padding: 8px 16px;
-      font-size: 14px;
+    #film-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 20px;
+      padding: 20px;
+    }
+    .film-card {
+      background: #fff;
+      padding: 16px;
+      border-radius: 10px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      position: relative;
+    }
+    .film-card h3 {
+      margin: 0 0 8px;
+    }
+    .film-card p {
+      margin: 4px 0;
+      color: #666;
+    }
+    .delete-btn {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: #ff4d4f;
       border: none;
-      border-radius: 6px;
-      cursor: pointer;
-      background-color: #333;
       color: white;
+      border-radius: 4px;
+      padding: 4px 8px;
+      cursor: pointer;
     }
-    button:hover {
-      background-color: #555;
-    }
-    ul {
-      list-style-type: none;
-      padding: 0;
-    }
-    li {
-      padding: 12px;
-      background: white;
-      margin-bottom: 8px;
-      border-radius: 6px;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    .delete-btn:hover {
+      background: #d9363e;
     }
   </style>
 </head>
 <body>
-  <header>
-    <h2>🎬 Your Film Collection</h2>
-    <div>
-      <button onclick="location.href='add_film.html'">➕ Add Film</button>
-      <button id="logout-btn">🚪 Logout</button>
-    </div>
-  </header>
 
-  <ul id="film-list"></ul>
+  <h1>🎞️ Your Film Library</h1>
+  <div id="film-list"></div>
 
   <script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.11/firebase-app.js";
-  import { getFirestore, collection, getDocs, query, orderBy } from "https://www.gstatic.com/firebasejs/9.6.11/firebase-firestore.js";
-  import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.6.11/firebase-auth.js";
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.11/firebase-app.js";
+    import {
+      getFirestore,
+      collection,
+      getDocs,
+      deleteDoc,
+      doc
+    } from "https://www.gstatic.com/firebasejs/9.6.11/firebase-firestore.js";
 
-  const firebaseConfig = {
-    apiKey: "AIzaSyCUpzUXiwihGhBzGfGcEzcm1-Zf5gAyj5A",
-    authDomain: "hubcollections-a001e.firebaseapp.com",
-    projectId: "hubcollections-a001e",
-    storageBucket: "hubcollections-a001e.appspot.com",
-    messagingSenderId: "765474227726",
-    appId: "1:765474227726:web:480d8f30ed57cdf77e5e5f"
-  };
+    const firebaseConfig = {
+      apiKey: "AIzaSyCUpzUXiwihGhBzGfGcEzcm1-Zf5gAyj5A",
+      authDomain: "hubcollections-a001e.firebaseapp.com",
+      projectId: "hubcollections-a001e",
+      storageBucket: "hubcollections-a001e.appspot.com",
+      messagingSenderId: "765474227726",
+      appId: "1:765474227726:web:480d8f30ed57cdf77e5e5f"
+    };
 
-  const app = initializeApp(firebaseConfig);
-  const db = getFirestore(app);
-  const auth = getAuth(app);
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
 
-  onAuthStateChanged(auth, async (user) => {
-    if (!user) {
-      window.location.href = "index.html";
-      return;
+    const filmList = document.getElementById("film-list");
+
+    async function loadFilms() {
+      filmList.innerHTML = "";
+      const snapshot = await getDocs(collection(db, "films"));
+
+      snapshot.forEach(docSnap => {
+        const data = docSnap.data();
+        const id = docSnap.id;
+
+        const card = document.createElement("div");
+        card.className = "film-card";
+        card.innerHTML = `
+          <h3>${data.title}</h3>
+          <p><strong>Genre:</strong> ${data.genre}</p>
+          <p><strong>Year:</strong> ${data.year}</p>
+          <button class="delete-btn" data-id="${id}">Delete</button>
+        `;
+
+        // Attach delete handler
+        card.querySelector(".delete-btn").addEventListener("click", async () => {
+          const confirmed = confirm(`Delete "${data.title}" from your collection?`);
+          if (confirmed) {
+            await deleteDoc(doc(db, "films", id));
+            loadFilms(); // refresh
+          }
+        });
+
+        filmList.appendChild(card);
+      });
     }
 
-    const filmsRef = collection(db, "films");
-    const q = query(filmsRef, orderBy("year", "desc")); // optional ordering
-    const querySnapshot = await getDocs(q);
-
-    const list = document.getElementById("film-list");
-    list.innerHTML = ""; // clear list
-
-    querySnapshot.forEach((doc) => {
-      const film = doc.data();
-      const li = document.createElement("li");
-      li.textContent = `${film.title} (${film.year}) - ${film.genre}`;
-      list.appendChild(li);
-    });
-  });
-</script>
+    loadFilms();
+  </script>
 
 </body>
 </html>
