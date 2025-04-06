@@ -1,16 +1,15 @@
-// 🔥 add_film.js (Firebase v9+ Modular)
-import { initializeApp } from "https://www.gstatic.com/firebasejs/9.1.2/firebase-app.js";
+// add_film.js
+import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.11/firebase-app.js";
 import {
   getFirestore,
   collection,
   addDoc
-} from "https://www.gstatic.com/firebasejs/9.1.2/firebase-firestore.js";
+} from "https://www.gstatic.com/firebasejs/9.6.11/firebase-firestore.js";
 import {
   getAuth,
   onAuthStateChanged
-} from "https://www.gstatic.com/firebasejs/9.1.2/firebase-auth.js";
+} from "https://www.gstatic.com/firebasejs/9.6.11/firebase-auth.js";
 
-// 🔐 Your Firebase config
 const firebaseConfig = {
   apiKey: "AIzaSyCUpzUXiwihGhBzGfGcEzcm1-Zf5gAyj5A",
   authDomain: "hubcollections-a001e.firebaseapp.com",
@@ -21,21 +20,19 @@ const firebaseConfig = {
   measurementId: "G-62C119XRJ9"
 };
 
-// ✅ Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const auth = getAuth(app);
 
-// 🔒 Wait for user to be authenticated before allowing film submission
+// Wait for user to be logged in before allowing film to be added
 onAuthStateChanged(auth, (user) => {
   if (!user) {
-    alert("You must be logged in to add a film.");
-    window.location.href = "index.html"; // redirect back to login
+    document.getElementById("status").textContent = "Please log in first.";
     return;
   }
 
-  // 🎬 Form submission
-  document.getElementById("film-form").addEventListener("submit", async (e) => {
+  const form = document.getElementById("film-form");
+  form.addEventListener("submit", async (e) => {
     e.preventDefault();
 
     const title = document.getElementById("title").value.trim();
@@ -52,13 +49,14 @@ onAuthStateChanged(auth, (user) => {
         title,
         genre,
         year,
-        ownerId: user.uid
+        ownerId: user.uid, // 🔐 saves the film to that user
       });
-      document.getElementById("status").textContent = "✅ Film added!";
-      document.getElementById("film-form").reset();
+
+      document.getElementById("status").textContent = "Film added successfully!";
+      form.reset();
     } catch (err) {
       console.error("Error adding film:", err);
-      document.getElementById("status").textContent = "❌ Error adding film.";
+      document.getElementById("status").textContent = "Error adding film.";
     }
   });
 });
