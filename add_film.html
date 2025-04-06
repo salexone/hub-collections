@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Add a Film</title>
+</head>
+<body>
+  <h1>Add a New Film</h1>
+  <form id="film-form">
+    <label>
+      Title:
+      <input type="text" id="title" required />
+    </label>
+    <br />
+    <label>
+      Genre:
+      <input type="text" id="genre" required />
+    </label>
+    <br />
+    <label>
+      Year:
+      <input type="number" id="year" required />
+    </label>
+    <br /><br />
+    <button type="submit">Add Film</button>
+  </form>
+
+  <p id="status"></p>
+
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/9.6.11/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.11/firebase-firestore-compat.js"></script>
+
+  <!-- Your app.js -->
+  <script src="add.js"></script>
+</body>
+</html>
