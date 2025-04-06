@@ -57,61 +57,75 @@
   <div id="film-list"></div>
 
   <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.11/firebase-app.js";
-    import {
-      getFirestore,
-      collection,
-      getDocs,
-      deleteDoc,
-      doc
-    } from "https://www.gstatic.com/firebasejs/9.6.11/firebase-firestore.js";
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.11/firebase-app.js";
+  import {
+    getFirestore,
+    collection,
+    getDocs,
+    deleteDoc,
+    doc
+  } from "https://www.gstatic.com/firebasejs/9.6.11/firebase-firestore.js";
+  import {
+    getAuth,
+    onAuthStateChanged
+  } from "https://www.gstatic.com/firebasejs/9.6.11/firebase-auth.js";
 
-    const firebaseConfig = {
-      apiKey: "AIzaSyCUpzUXiwihGhBzGfGcEzcm1-Zf5gAyj5A",
-      authDomain: "hubcollections-a001e.firebaseapp.com",
-      projectId: "hubcollections-a001e",
-      storageBucket: "hubcollections-a001e.appspot.com",
-      messagingSenderId: "765474227726",
-      appId: "1:765474227726:web:480d8f30ed57cdf77e5e5f"
-    };
+  const firebaseConfig = {
+    apiKey: "AIzaSyCUpzUXiwihGhBzGfGcEzcm1-Zf5gAyj5A",
+    authDomain: "hubcollections-a001e.firebaseapp.com",
+    projectId: "hubcollections-a001e",
+    storageBucket: "hubcollections-a001e.appspot.com",
+    messagingSenderId: "765474227726",
+    appId: "1:765474227726:web:480d8f30ed57cdf77e5e5f"
+  };
 
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+  const auth = getAuth(app);
 
-    const filmList = document.getElementById("film-list");
+  const filmList = document.getElementById("film-list");
 
-    async function loadFilms() {
-      filmList.innerHTML = "";
-      const snapshot = await getDocs(collection(db, "films"));
-
-      snapshot.forEach(docSnap => {
-        const data = docSnap.data();
-        const id = docSnap.id;
-
-        const card = document.createElement("div");
-        card.className = "film-card";
-        card.innerHTML = `
-          <h3>${data.title}</h3>
-          <p><strong>Genre:</strong> ${data.genre}</p>
-          <p><strong>Year:</strong> ${data.year}</p>
-          <button class="delete-btn" data-id="${id}">Delete</button>
-        `;
-
-        // Attach delete handler
-        card.querySelector(".delete-btn").addEventListener("click", async () => {
-          const confirmed = confirm(`Delete "${data.title}" from your collection?`);
-          if (confirmed) {
-            await deleteDoc(doc(db, "films", id));
-            loadFilms(); // refresh
-          }
-        });
-
-        filmList.appendChild(card);
-      });
+  onAuthStateChanged(auth, (user) => {
+    if (user) {
+      loadFilms(user.uid);
+    } else {
+      window.location.href = "index.html"; // not logged in, redirect
     }
+  });
 
-    loadFilms();
-  </script>
+  async function loadFilms(uid) {
+    filmList.innerHTML = "";
+    const snapshot = await getDocs(collection(db, "films"));
+
+    snapshot.forEach(docSnap => {
+      const data = docSnap.data();
+      const id = docSnap.id;
+
+      // Optional: filter by ownerId if you're storing it
+      if (data.ownerId && data.ownerId !== uid) return;
+
+      const card = document.createElement("div");
+      card.className = "film-card";
+      card.innerHTML = `
+        <h3>${data.title}</h3>
+        <p><strong>Genre:</strong> ${data.genre}</p>
+        <p><strong>Year:</strong> ${data.year}</p>
+        <button class="delete-btn" data-id="${id}">Delete</button>
+      `;
+
+      // Delete button
+      card.querySelector(".delete-btn").addEventListener("click", async () => {
+        const confirmed = confirm(`Delete "${data.title}" from your collection?`);
+        if (confirmed) {
+          await deleteDoc(doc(db, "films", id));
+          loadFilms(uid); // Refresh after deletion
+        }
+      });
+
+      filmList.appendChild(card);
+    });
+  }
+</script>
 
 </body>
 </html>
