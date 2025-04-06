@@ -73,7 +73,8 @@
 
       // Load user films
       const q = query(collection(db, "films"), where("ownerId", "==", user.uid));
-      const snapshot = await getDocs(q);
+      const snapshot = await getDocs(collection(db, "films"));
+
       movieList.innerHTML = "";
 
       snapshot.forEach((doc) => {
