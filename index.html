@@ -61,7 +61,20 @@
 
     document.getElementById("login-btn").addEventListener("click", async () => {
       try {
-        await signInWithPopup(auth, provider);
+        const result = await signInWithPopup(auth, provider);
+        const user = result.user;
+
+        // Define the allowed emails
+        const allowedEmails = ["tiago.as.moreira@gmail.com", "wife@gmail.com"];
+
+        // If the user's email is not in the allowed emails list, sign them out
+        if (!allowedEmails.includes(user.email)) {
+          alert("Access denied: unauthorized email.");
+          await auth.signOut();
+          return;
+        }
+
+        // If email is allowed, redirect to the dashboard
         window.location.href = "film_dashboard.html";
       } catch (err) {
         console.error("Login error:", err);
