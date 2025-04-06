@@ -8,20 +8,18 @@
 <body>
   <h1>My Movie Collection</h1>
 
-<button id="googleLoginButton">🔐 Login with Google</button>
-<button id="logout-btn" style="display: none;">🚪 Logout</button>
-<button id="add-film-btn" style="display: none;" onclick="location.href='add_film.html'">➕ Add Film</button>
+  <button id="googleLoginButton">🔐 Login with Google</button>
+  <button id="logout-btn" style="display: none;">🚪 Logout</button>
+  <button id="add-film-btn" style="display: none;" onclick="location.href='add_film.html'">➕ Add Film</button>
 
-<p id="user-info">Not logged in</p>
-<ul id="movie-list"></ul>
-
-
+  <p id="user-info">Not logged in</p>
+  <ul id="movie-list"></ul>
 
   <!-- Firebase logic as module -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.1.2/firebase-app.js";
     import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/9.1.2/firebase-firestore.js";
-    import { getAuth, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/9.1.2/firebase-auth.js";
+    import { getAuth, GoogleAuthProvider, signInWithPopup, signOut } from "https://www.gstatic.com/firebasejs/9.1.2/firebase-auth.js";
 
     // 🔥 Your Firebase config
     const firebaseConfig = {
@@ -40,16 +38,40 @@
     const auth = getAuth(app);
     const provider = new GoogleAuthProvider();
 
+    // Get the login and logout buttons
+    const googleLoginButton = document.getElementById("googleLoginButton");
+    const logoutButton = document.getElementById("logout-btn");
+    const addFilmButton = document.getElementById("add-film-btn");
+    const userInfo = document.getElementById("user-info");
+
     // Google Login
-    const googleLoginButton = document.getElementById("google-login");
     googleLoginButton.addEventListener("click", async () => {
       try {
         const result = await signInWithPopup(auth, provider);
         const user = result.user;
         console.log("Logged in as:", user.displayName);
+        userInfo.textContent = `Logged in as ${user.displayName}`;
+        googleLoginButton.style.display = "none";
+        logoutButton.style.display = "inline";
+        addFilmButton.style.display = "inline"; // Show "Add Film" button after login
         loadMovies(); // Load data after login
       } catch (error) {
         console.error("Login error:", error);
+      }
+    });
+
+    // Logout functionality
+    logoutButton.addEventListener("click", async () => {
+      try {
+        await signOut(auth);
+        console.log("Logged out");
+        userInfo.textContent = "Not logged in";
+        googleLoginButton.style.display = "inline";
+        logoutButton.style.display = "none";
+        addFilmButton.style.display = "none"; // Hide "Add Film" button after logout
+        document.getElementById("movie-list").innerHTML = ""; // Clear movie list after logout
+      } catch (error) {
+        console.error("Logout error:", error);
       }
     });
 
@@ -70,8 +92,22 @@
       }
     }
 
-    // Optionally auto-load on page load (can be skipped for auth-gated content)
-    // window.onload = loadMovies;
+    // Optional: auto load if a user is already logged in (you can skip this if not needed)
+    auth.onAuthStateChanged(user => {
+      if (user) {
+        googleLoginButton.style.display = "none";
+        logoutButton.style.display = "inline";
+        addFilmButton.style.display = "inline"; // Show "Add Film" button after login
+        userInfo.textContent = `Logged in as ${user.displayName}`;
+        loadMovies(); // Load movies if user is already logged in
+      } else {
+        userInfo.textContent = "Not logged in";
+        googleLoginButton.style.display = "inline";
+        logoutButton.style.display = "none";
+        addFilmButton.style.display = "none";
+      }
+    });
+
   </script>
 </body>
 </html>
