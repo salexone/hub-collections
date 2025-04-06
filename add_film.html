@@ -28,11 +28,63 @@
 
   <p id="status"></p>
 
-  <!-- Firebase SDKs -->
-  <script src="https://www.gstatic.com/firebasejs/9.6.11/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.6.11/firebase-firestore-compat.js"></script>
+  <!-- Firebase Modules -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.11/firebase-app.js";
+    import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/9.6.11/firebase-firestore.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.6.11/firebase-auth.js";
 
-  <!-- Your app.js -->
-  <script src="add_film.js"></script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyCUpzUXiwihGhBzGfGcEzcm1-Zf5gAyj5A",
+      authDomain: "hubcollections-a001e.firebaseapp.com",
+      projectId: "hubcollections-a001e",
+      storageBucket: "hubcollections-a001e.appspot.com",
+      messagingSenderId: "765474227726",
+      appId: "1:765474227726:web:480d8f30ed57cdf77e5e5f",
+      measurementId: "G-62C119XRJ9"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    const auth = getAuth(app);
+
+    onAuthStateChanged(auth, (user) => {
+      if (!user) {
+        document.getElementById("status").textContent = "You must be logged in to add films.";
+        document.getElementById("film-form").style.display = "none";
+        return;
+      }
+
+      const filmForm = document.getElementById("film-form");
+
+      filmForm.addEventListener("submit", async (e) => {
+        e.preventDefault();
+
+        const title = document.getElementById("title").value.trim();
+        const genre = document.getElementById("genre").value.trim();
+        const year = parseInt(document.getElementById("year").value);
+
+        if (!title || !genre || isNaN(year)) {
+          document.getElementById("status").textContent = "Please fill in all fields correctly.";
+          return;
+        }
+
+        try {
+          await addDoc(collection(db, "films"), {
+            title,
+            genre,
+            year,
+            ownerId: user.uid
+          });
+
+          document.getElementById("status").textContent = "🎉 Film added!";
+          filmForm.reset();
+        } catch (err) {
+          console.error("Error adding film:", err);
+          document.getElementById("status").textContent = "❌ Error adding film.";
+        }
+      });
+    });
+  </script>
 </body>
 </html>
