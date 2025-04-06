@@ -1,4 +1,16 @@
-// Firebase config
+// 🔥 add_film.js (Firebase v9+ Modular)
+import { initializeApp } from "https://www.gstatic.com/firebasejs/9.1.2/firebase-app.js";
+import {
+  getFirestore,
+  collection,
+  addDoc
+} from "https://www.gstatic.com/firebasejs/9.1.2/firebase-firestore.js";
+import {
+  getAuth,
+  onAuthStateChanged
+} from "https://www.gstatic.com/firebasejs/9.1.2/firebase-auth.js";
+
+// 🔐 Your Firebase config
 const firebaseConfig = {
   apiKey: "AIzaSyCUpzUXiwihGhBzGfGcEzcm1-Zf5gAyj5A",
   authDomain: "hubcollections-a001e.firebaseapp.com",
@@ -9,20 +21,20 @@ const firebaseConfig = {
   measurementId: "G-62C119XRJ9"
 };
 
-// Init Firebase
-firebase.initializeApp(firebaseConfig);
-const db = firebase.firestore();
-const auth = firebase.auth();
+// ✅ Initialize Firebase
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+const auth = getAuth(app);
 
-// Wait for auth state
-auth.onAuthStateChanged(user => {
+// 🔒 Wait for user to be authenticated before allowing film submission
+onAuthStateChanged(auth, (user) => {
   if (!user) {
     alert("You must be logged in to add a film.");
-    window.location.href = "index.html";
+    window.location.href = "index.html"; // redirect back to login
     return;
   }
 
-  // Handle form submit
+  // 🎬 Form submission
   document.getElementById("film-form").addEventListener("submit", async (e) => {
     e.preventDefault();
 
@@ -36,17 +48,17 @@ auth.onAuthStateChanged(user => {
     }
 
     try {
-      await db.collection("films").add({
+      await addDoc(collection(db, "films"), {
         title,
         genre,
         year,
-        ownerId: user.uid // 🔑 Add the ownerId here
+        ownerId: user.uid
       });
-      document.getElementById("status").textContent = "Film added successfully!";
+      document.getElementById("status").textContent = "✅ Film added!";
       document.getElementById("film-form").reset();
     } catch (err) {
       console.error("Error adding film:", err);
-      document.getElementById("status").textContent = "Error adding film.";
+      document.getElementById("status").textContent = "❌ Error adding film.";
     }
   });
 });
