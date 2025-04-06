@@ -8,16 +8,13 @@
 <body>
   <h1>My Movie Collection</h1>
 
-<!-- Button hidden until user is logged in -->
-<button id="addFilmBtn" style="display: none;" onclick="location.href='add_film.html'">
-  ➕ Add a New Film
-</button>
+<button id="login-btn">🔐 Login with Google</button>
+<button id="logout-btn" style="display: none;">🚪 Logout</button>
+<button id="add-film-btn" style="display: none;" onclick="location.href='add_film.html'">➕ Add Film</button>
 
+<p id="user-info">Not logged in</p>
 <ul id="movie-list"></ul>
 
-<!-- Optional: Login button -->
-<button id="loginBtn">🔐 Login with Google</button>
-<button id="logoutBtn" style="display:none;">🚪 Logout</button>
 
 
   <!-- Firebase logic as module -->
