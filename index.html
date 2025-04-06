@@ -3,95 +3,78 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Hub Collections</title>
+  <title>Hub Collections — Login</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      background: #f5f5f5;
+    }
+    .container {
+      text-align: center;
+      background: white;
+      padding: 40px;
+      border-radius: 12px;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+    }
+    button {
+      padding: 10px 20px;
+      font-size: 16px;
+      border: none;
+      background-color: #4285F4;
+      color: white;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #357ae8;
+    }
+  </style>
 </head>
 <body>
-  <h1>My Movie Collection</h1>
+  <div class="container">
+    <h1>🎥 Hub Collections</h1>
+    <p>Login with Google to view your film library</p>
+    <button id="login-btn">🔐 Login with Google</button>
+  </div>
 
-  <button id="googleLoginButton">🔐 Login with Google</button>
-  <button id="logout-btn" style="display: none;">🚪 Logout</button>
-  <button id="add-film-btn" style="display: none;" onclick="location.href='add_film.html'">➕ Add Film</button>
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.11/firebase-app.js";
+    import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.6.11/firebase-auth.js";
 
-  <p id="user-info">Not logged in</p>
-  <ul id="movie-list"></ul>
+    const firebaseConfig = {
+      apiKey: "AIzaSyCUpzUXiwihGhBzGfGcEzcm1-Zf5gAyj5A",
+      authDomain: "hubcollections-a001e.firebaseapp.com",
+      projectId: "hubcollections-a001e",
+      storageBucket: "hubcollections-a001e.appspot.com",
+      messagingSenderId: "765474227726",
+      appId: "1:765474227726:web:480d8f30ed57cdf77e5e5f"
+    };
 
-  <!-- Inside <body> of index.html, at the end -->
-<script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.11/firebase-app.js";
-  import {
-    getFirestore,
-    collection,
-    getDocs,
-    query,
-    where
-  } from "https://www.gstatic.com/firebasejs/9.6.11/firebase-firestore.js";
-  import {
-    getAuth,
-    signInWithPopup,
-    signOut,
-    GoogleAuthProvider,
-    onAuthStateChanged
-  } from "https://www.gstatic.com/firebasejs/9.6.11/firebase-auth.js";
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const provider = new GoogleAuthProvider();
 
-  const firebaseConfig = {
-    apiKey: "AIzaSyCUpzUXiwihGhBzGfGcEzcm1-Zf5gAyj5A",
-    authDomain: "hubcollections-a001e.firebaseapp.com",
-    projectId: "hubcollections-a001e",
-    storageBucket: "hubcollections-a001e.appspot.com",
-    messagingSenderId: "765474227726",
-    appId: "1:765474227726:web:480d8f30ed57cdf77e5e5f",
-    measurementId: "G-62C119XRJ9"
-  };
+    document.getElementById("login-btn").addEventListener("click", async () => {
+      try {
+        await signInWithPopup(auth, provider);
+        window.location.href = "dashboard.html";
+      } catch (err) {
+        console.error("Login error:", err);
+        alert("Login failed. Check the console.");
+      }
+    });
 
-  const app = initializeApp(firebaseConfig);
-  const db = getFirestore(app);
-  const auth = getAuth(app);
-  const provider = new GoogleAuthProvider();
-
-  const loginBtn = document.getElementById("googleLoginButton");
-  const logoutBtn = document.getElementById("logout-btn");
-  const addFilmBtn = document.getElementById("add-film-btn");
-  const userInfo = document.getElementById("user-info");
-  const movieList = document.getElementById("movie-list");
-
-  loginBtn.addEventListener("click", async () => {
-    try {
-      await signInWithPopup(auth, provider);
-    } catch (error) {
-      console.error("Login error:", error);
-    }
-  });
-
-  logoutBtn.addEventListener("click", () => signOut(auth));
-
-  onAuthStateChanged(auth, async (user) => {
-    if (user) {
-      userInfo.textContent = `Logged in as ${user.displayName}`;
-      loginBtn.style.display = "none";
-      logoutBtn.style.display = "inline";
-      addFilmBtn.style.display = "inline";
-
-      // Load user films
-      const q = query(collection(db, "films"), where("ownerId", "==", user.uid));
-      const snapshot = await getDocs(collection(db, "films"));
-
-      movieList.innerHTML = "";
-
-      snapshot.forEach((doc) => {
-        const data = doc.data();
-        const li = document.createElement("li");
-        li.textContent = `${data.title} (${data.year}) - ${data.genre}`;
-        movieList.appendChild(li);
-      });
-    } else {
-      userInfo.textContent = "Not logged in";
-      loginBtn.style.display = "inline";
-      logoutBtn.style.display = "none";
-      addFilmBtn.style.display = "none";
-      movieList.innerHTML = "";
-    }
-  });
-</script>
-
+    // If already logged in, go to dashboard
+    onAuthStateChanged(auth, user => {
+      if (user) {
+        window.location.href = "dashboard.html";
+      }
+    });
+  </script>
 </body>
 </html>
