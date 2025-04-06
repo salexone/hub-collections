@@ -1,20 +1,70 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>My Film Collection</title>
-  <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js"></script>
-  <script src="app.js" defer></script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Hub Collections</title>
 </head>
 <body>
-  <h1>My Film Collection</h1>
-
-  <button id="login-btn">Login with Google</button>
-  <button id="logout-btn" style="display:none;">Logout</button>
-  <p id="user-info">Not logged in</p>
-
+  <h1>My Movie Collection</h1>
+  <button id="google-login">Login with Google</button>
   <ul id="movie-list"></ul>
+
+  <!-- Firebase logic as module -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.1.2/firebase-app.js";
+    import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/9.1.2/firebase-firestore.js";
+    import { getAuth, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/9.1.2/firebase-auth.js";
+
+    // 🔥 Your Firebase config
+    const firebaseConfig = {
+      apiKey: "AIzaSyCUpzUXiwihGhBzGfGcEzcm1-Zf5gAyj5A",
+      authDomain: "hubcollections-a001e.firebaseapp.com",
+      projectId: "hubcollections-a001e",
+      storageBucket: "hubcollections-a001e.appspot.com",
+      messagingSenderId: "765474227726",
+      appId: "1:765474227726:web:480d8f30ed57cdf77e5e5f",
+      measurementId: "G-62C119XRJ9"
+    };
+
+    // Init Firebase
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    const auth = getAuth(app);
+    const provider = new GoogleAuthProvider();
+
+    // Google Login
+    const googleLoginButton = document.getElementById("google-login");
+    googleLoginButton.addEventListener("click", async () => {
+      try {
+        const result = await signInWithPopup(auth, provider);
+        const user = result.user;
+        console.log("Logged in as:", user.displayName);
+        loadMovies(); // Load data after login
+      } catch (error) {
+        console.error("Login error:", error);
+      }
+    });
+
+    // Load movies from "films" collection
+    async function loadMovies() {
+      try {
+        const querySnapshot = await getDocs(collection(db, "films"));
+        const list = document.getElementById("movie-list");
+        list.innerHTML = "";
+        querySnapshot.forEach((doc) => {
+          const data = doc.data();
+          const li = document.createElement("li");
+          li.textContent = `${data.title} (${data.year}) - ${data.genre}`;
+          list.appendChild(li);
+        });
+      } catch (error) {
+        console.error("Error loading movies:", error);
+      }
+    }
+
+    // Optionally auto-load on page load (can be skipped for auth-gated content)
+    // window.onload = loadMovies;
+  </script>
 </body>
 </html>
