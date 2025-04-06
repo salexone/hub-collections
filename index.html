@@ -15,99 +15,82 @@
   <p id="user-info">Not logged in</p>
   <ul id="movie-list"></ul>
 
-  <!-- Firebase logic as module -->
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.1.2/firebase-app.js";
-    import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/9.1.2/firebase-firestore.js";
-    import { getAuth, GoogleAuthProvider, signInWithPopup, signOut } from "https://www.gstatic.com/firebasejs/9.1.2/firebase-auth.js";
+  <!-- Inside <body> of index.html, at the end -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.11/firebase-app.js";
+  import {
+    getFirestore,
+    collection,
+    getDocs,
+    query,
+    where
+  } from "https://www.gstatic.com/firebasejs/9.6.11/firebase-firestore.js";
+  import {
+    getAuth,
+    signInWithPopup,
+    signOut,
+    GoogleAuthProvider,
+    onAuthStateChanged
+  } from "https://www.gstatic.com/firebasejs/9.6.11/firebase-auth.js";
 
-    // 🔥 Your Firebase config
-    const firebaseConfig = {
-      apiKey: "AIzaSyCUpzUXiwihGhBzGfGcEzcm1-Zf5gAyj5A",
-      authDomain: "hubcollections-a001e.firebaseapp.com",
-      projectId: "hubcollections-a001e",
-      storageBucket: "hubcollections-a001e.appspot.com",
-      messagingSenderId: "765474227726",
-      appId: "1:765474227726:web:480d8f30ed57cdf77e5e5f",
-      measurementId: "G-62C119XRJ9"
-    };
+  const firebaseConfig = {
+    apiKey: "AIzaSyCUpzUXiwihGhBzGfGcEzcm1-Zf5gAyj5A",
+    authDomain: "hubcollections-a001e.firebaseapp.com",
+    projectId: "hubcollections-a001e",
+    storageBucket: "hubcollections-a001e.appspot.com",
+    messagingSenderId: "765474227726",
+    appId: "1:765474227726:web:480d8f30ed57cdf77e5e5f",
+    measurementId: "G-62C119XRJ9"
+  };
 
-    // Init Firebase
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
-    const auth = getAuth(app);
-    const provider = new GoogleAuthProvider();
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+  const auth = getAuth(app);
+  const provider = new GoogleAuthProvider();
 
-    // Get the login and logout buttons
-    const googleLoginButton = document.getElementById("googleLoginButton");
-    const logoutButton = document.getElementById("logout-btn");
-    const addFilmButton = document.getElementById("add-film-btn");
-    const userInfo = document.getElementById("user-info");
+  const loginBtn = document.getElementById("googleLoginButton");
+  const logoutBtn = document.getElementById("logout-btn");
+  const addFilmBtn = document.getElementById("add-film-btn");
+  const userInfo = document.getElementById("user-info");
+  const movieList = document.getElementById("movie-list");
 
-    // Google Login
-    googleLoginButton.addEventListener("click", async () => {
-      try {
-        const result = await signInWithPopup(auth, provider);
-        const user = result.user;
-        console.log("Logged in as:", user.displayName);
-        userInfo.textContent = `Logged in as ${user.displayName}`;
-        googleLoginButton.style.display = "none";
-        logoutButton.style.display = "inline";
-        addFilmButton.style.display = "inline"; // Show "Add Film" button after login
-        loadMovies(); // Load data after login
-      } catch (error) {
-        console.error("Login error:", error);
-      }
-    });
-
-    // Logout functionality
-    logoutButton.addEventListener("click", async () => {
-      try {
-        await signOut(auth);
-        console.log("Logged out");
-        userInfo.textContent = "Not logged in";
-        googleLoginButton.style.display = "inline";
-        logoutButton.style.display = "none";
-        addFilmButton.style.display = "none"; // Hide "Add Film" button after logout
-        document.getElementById("movie-list").innerHTML = ""; // Clear movie list after logout
-      } catch (error) {
-        console.error("Logout error:", error);
-      }
-    });
-
-    // Load movies from "films" collection
-    async function loadMovies() {
-      try {
-        const querySnapshot = await getDocs(collection(db, "films"));
-        const list = document.getElementById("movie-list");
-        list.innerHTML = "";
-        querySnapshot.forEach((doc) => {
-          const data = doc.data();
-          const li = document.createElement("li");
-          li.textContent = `${data.title} (${data.year}) - ${data.genre}`;
-          list.appendChild(li);
-        });
-      } catch (error) {
-        console.error("Error loading movies:", error);
-      }
+  loginBtn.addEventListener("click", async () => {
+    try {
+      await signInWithPopup(auth, provider);
+    } catch (error) {
+      console.error("Login error:", error);
     }
+  });
 
-    // Optional: auto load if a user is already logged in (you can skip this if not needed)
-    auth.onAuthStateChanged(user => {
-      if (user) {
-        googleLoginButton.style.display = "none";
-        logoutButton.style.display = "inline";
-        addFilmButton.style.display = "inline"; // Show "Add Film" button after login
-        userInfo.textContent = `Logged in as ${user.displayName}`;
-        loadMovies(); // Load movies if user is already logged in
-      } else {
-        userInfo.textContent = "Not logged in";
-        googleLoginButton.style.display = "inline";
-        logoutButton.style.display = "none";
-        addFilmButton.style.display = "none";
-      }
-    });
+  logoutBtn.addEventListener("click", () => signOut(auth));
 
-  </script>
+  onAuthStateChanged(auth, async (user) => {
+    if (user) {
+      userInfo.textContent = `Logged in as ${user.displayName}`;
+      loginBtn.style.display = "none";
+      logoutBtn.style.display = "inline";
+      addFilmBtn.style.display = "inline";
+
+      // Load user films
+      const q = query(collection(db, "films"), where("ownerId", "==", user.uid));
+      const snapshot = await getDocs(q);
+      movieList.innerHTML = "";
+
+      snapshot.forEach((doc) => {
+        const data = doc.data();
+        const li = document.createElement("li");
+        li.textContent = `${data.title} (${data.year}) - ${data.genre}`;
+        movieList.appendChild(li);
+      });
+    } else {
+      userInfo.textContent = "Not logged in";
+      loginBtn.style.display = "inline";
+      logoutBtn.style.display = "none";
+      addFilmBtn.style.display = "none";
+      movieList.innerHTML = "";
+    }
+  });
+</script>
+
 </body>
 </html>
