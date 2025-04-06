@@ -6,9 +6,19 @@
   <title>Hub Collections</title>
 </head>
 <body>
-  <h1>HUB Collections</h1>
-  <button id="google-login">Login with Google</button>
-  <ul id="movie-list"></ul>
+  <h1>My Movie Collection</h1>
+
+<!-- Button hidden until user is logged in -->
+<button id="addFilmBtn" style="display: none;" onclick="location.href='add_film.html'">
+  ➕ Add a New Film
+</button>
+
+<ul id="movie-list"></ul>
+
+<!-- Optional: Login button -->
+<button id="loginBtn">🔐 Login with Google</button>
+<button id="logoutBtn" style="display:none;">🚪 Logout</button>
+
 
   <!-- Firebase logic as module -->
   <script type="module">
