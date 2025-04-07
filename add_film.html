@@ -3,77 +3,80 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Add a Film</title>
+  <title>Add a New Film</title>
   <style>
     body {
+      font-family: Arial, sans-serif;
       margin: 0;
-      font-family: sans-serif;
-      background: #f4f4f9;
-      padding: 40px;
+      padding: 0;
+      background-color: #f4f4f4;
     }
     .container {
-      max-width: 600px;
-      margin: auto;
-      background: white;
-      padding: 30px;
-      border-radius: 16px;
-      box-shadow: 0 0 20px rgba(0,0,0,0.1);
+      max-width: 800px;
+      margin: 0 auto;
+      background: #fff;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      margin-top: 30px;
     }
     h1, h2 {
       text-align: center;
     }
-    label {
-      display: block;
-      margin-top: 15px;
-      font-weight: bold;
-    }
     input, select, button {
       width: 100%;
       padding: 10px;
-      margin-top: 5px;
-      border: 1px solid #ccc;
-      border-radius: 8px;
-      font-size: 1rem;
+      margin: 10px 0;
+      border: 1px solid #ddd;
+      border-radius: 6px;
     }
     button {
-      background: #007bff;
+      background-color: #4285F4;
       color: white;
-      border: none;
       cursor: pointer;
     }
     button:hover {
-      background: #0056b3;
+      background-color: #357ae8;
     }
     #search-result {
       margin-top: 20px;
-      text-align: center;
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 6px;
     }
-    img {
-      max-width: 100%;
+    .film-item {
+      margin-bottom: 20px;
+      border: 1px solid #ccc;
+      padding: 10px;
       border-radius: 8px;
+    }
+    .film-item img {
+      max-height: 150px;
     }
   </style>
 </head>
 <body>
+
   <div class="container">
     <h1>Add a New Film</h1>
-
+    
     <h2>🔍 Search Movie</h2>
     <input type="text" id="search-query" placeholder="Enter movie title..." />
     <button id="search-btn">Search</button>
+
     <div id="search-result"></div>
 
     <form id="film-form">
-      <label>Poster: <input type="text" id="poster" /></label>
-      <label>Original Title: <input type="text" id="original-title" /></label>
-      <label>Portuguese Title: <input type="text" id="pt-title" /></label>
-      <label>Director: <input type="text" id="director" /></label>
-      <label>Actors: <input type="text" id="actors" /></label>
-      <label>Genre: <input type="text" id="genre" /></label>
-      <label>Duration (min): <input type="number" id="duration" /></label>
-      <label>Format:
+      <label>Poster: <input type="text" id="poster" /></label><br />
+      <label>Title: <input type="text" id="original-title" /></label><br />
+      <label>Portuguese Title: <input type="text" id="pt-title" /></label><br />
+      <label>Director: <input type="text" id="director" /></label><br />
+      <label>Actors: <input type="text" id="actors" /></label><br />
+      <label>Genre: <input type="text" id="genre" /></label><br />
+      <label>Duration (min): <input type="number" id="duration" /></label><br />
+      
+      <label>Format: 
         <select id="format">
-          <option value="">Select format</option>
           <option value="DVD">DVD</option>
           <option value="Blu Ray">Blu Ray</option>
           <option value="VHS">VHS</option>
@@ -81,18 +84,18 @@
           <option value="Laser Film">Laser Film</option>
           <option value="Reel">Reel</option>
         </select>
-      </label>
-      <label>Edition:
+      </label><br />
+      
+      <label>Edition: 
         <select id="edition">
-          <option value="">Select edition</option>
           <option value="Normal">Normal</option>
           <option value="Colecionador">Colecionador</option>
           <option value="Especial">Especial</option>
           <option value="Deluxe">Deluxe</option>
           <option value="2-Discos">2-Discos</option>
         </select>
-      </label>
-      <br />
+      </label><br /><br />
+      
       <button type="submit">Add Film</button>
     </form>
 
@@ -100,24 +103,8 @@
   </div>
 
   <script type="module">
+    const TMDB_API_KEY = "8e66be4aa9866cb71ea3a2424377ab1c";
     const TMDB_READ_TOKEN = "eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiI4ZTY2YmU0YWE5ODY2Y2I3MWVhM2EyNDI0Mzc3YWIxYyIsIm5iZiI6MTcyMTU1OTU1My43MTEsInN1YiI6IjY2OWNlYTAxOWUzMzVjODIwNzA5YzA3YyIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.dQMQmH0hl5bikBTkByc17Lf0Ur5B2o1z_HtGhgrC5a0";
-
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.11/firebase-app.js";
-    import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/9.6.11/firebase-firestore.js";
-    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.6.11/firebase-auth.js";
-
-    const firebaseConfig = {
-      apiKey: "AIzaSyCUpzUXiwihGhBzGfGcEzcm1-Zf5gAyj5A",
-      authDomain: "hubcollections-a001e.firebaseapp.com",
-      projectId: "hubcollections-a001e",
-      storageBucket: "hubcollections-a001e.appspot.com",
-      messagingSenderId: "765474227726",
-      appId: "1:765474227726:web:480d8f30ed57cdf77e5e5f"
-    };
-
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
-    const auth = getAuth(app);
 
     document.getElementById("search-btn").addEventListener("click", async () => {
       const query = document.getElementById("search-query").value.trim();
@@ -140,32 +127,50 @@
           return;
         }
 
-        const film = data.results[0, 5];
+        const topResults = data.results.slice(0, 5); // Get first 5 films
 
-        const movieDetailRes = await fetch(`https://api.themoviedb.org/3/movie/${film.id}?language=en-US&append_to_response=credits`, {
-          headers: {
-            Authorization: `Bearer ${TMDB_READ_TOKEN}`,
-            accept: "application/json"
-          }
+        topResults.forEach((film) => {
+          const posterURL = film.poster_path
+            ? `https://image.tmdb.org/t/p/w500${film.poster_path}`
+            : "";
+
+          const filmDiv = document.createElement("div");
+          filmDiv.classList.add("film-item");
+          filmDiv.innerHTML = `
+            <strong>${film.title} (${film.release_date?.slice(0, 4)})</strong><br/>
+            ${posterURL ? `<img src="${posterURL}"><br/>` : ""}
+            <button data-film-id="${film.id}" class="select-film-btn">Use This Film</button>
+          `;
+          resultContainer.appendChild(filmDiv);
         });
-        const movieDetails = await movieDetailRes.json();
 
-        const posterURL = film.poster_path ? `https://image.tmdb.org/t/p/w500${film.poster_path}` : "";
+        // Handle film selection
+        document.querySelectorAll(".select-film-btn").forEach(button => {
+          button.addEventListener("click", async (e) => {
+            const filmId = e.target.getAttribute("data-film-id");
 
-        resultContainer.innerHTML = `
-          <h3>Result: ${film.title} (${film.release_date?.slice(0, 4)})</h3>
-          ${posterURL ? `<img src="${posterURL}" style="max-height:200px;"><br/>` : ""}
-          <button id="select-film">Use This Film</button>
-        `;
+            const movieDetailRes = await fetch(`https://api.themoviedb.org/3/movie/${filmId}?language=en-US&append_to_response=credits`, {
+              headers: {
+                Authorization: `Bearer ${TMDB_READ_TOKEN}`,
+                accept: "application/json"
+              }
+            });
 
-        document.getElementById("select-film").addEventListener("click", () => {
-          document.getElementById("poster").value = posterURL;
-          document.getElementById("original-title").value = film.original_title;
-          document.getElementById("pt-title").value = "";
-          document.getElementById("director").value = movieDetails.credits.crew.find(p => p.job === "Director")?.name || "";
-          document.getElementById("actors").value = movieDetails.credits.cast.slice(0, 2).map(actor => actor.name).join(", ");
-          document.getElementById("genre").value = movieDetails.genres.map(g => g.name).join(", ");
-          document.getElementById("duration").value = movieDetails.runtime || "";
+            const movieDetails = await movieDetailRes.json();
+            const film = movieDetails;
+
+            const posterURL = film.poster_path
+              ? `https://image.tmdb.org/t/p/w500${film.poster_path}`
+              : "";
+
+            document.getElementById("poster").value = posterURL;
+            document.getElementById("original-title").value = film.original_title;
+            document.getElementById("pt-title").value = "";
+            document.getElementById("director").value = film.credits.crew.find(p => p.job === "Director")?.name || "";
+            document.getElementById("actors").value = film.credits.cast.slice(0, 2).map(actor => actor.name).join(", ");
+            document.getElementById("genre").value = film.genres.map(g => g.name).join(", ");
+            document.getElementById("duration").value = film.runtime || "";
+          });
         });
 
       } catch (err) {
@@ -174,6 +179,25 @@
       }
     });
 
+    // Firebase setup (Add film to DB)
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.11/firebase-app.js";
+    import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/9.6.11/firebase-firestore.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.6.11/firebase-auth.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyCUpzUXiwihGhBzGfGcEzcm1-Zf5gAyj5A",
+      authDomain: "hubcollections-a001e.firebaseapp.com",
+      projectId: "hubcollections-a001e",
+      storageBucket: "hubcollections-a001e.appspot.com",
+      messagingSenderId: "765474227726",
+      appId: "1:765474227726:web:480d8f30ed57cdf77e5e5f",
+      measurementId: "G-62C119XRJ9"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    const auth = getAuth(app);
+
     onAuthStateChanged(auth, (user) => {
       if (!user) {
         document.getElementById("status").textContent = "You must be logged in to add films.";
@@ -181,26 +205,30 @@
         return;
       }
 
-      document.getElementById("film-form").addEventListener("submit", async (e) => {
+      const filmForm = document.getElementById("film-form");
+
+      filmForm.addEventListener("submit", async (e) => {
         e.preventDefault();
 
-        const filmData = {
-          poster: document.getElementById("poster").value,
-          title: document.getElementById("original-title").value.trim(),
-          titlePt: document.getElementById("pt-title").value.trim(),
-          director: document.getElementById("director").value.trim(),
-          actors: document.getElementById("actors").value.trim(),
-          genre: document.getElementById("genre").value.trim(),
-          duration: parseInt(document.getElementById("duration").value),
-          format: document.getElementById("format").value,
-          edition: document.getElementById("edition").value,
-          ownerId: user.uid
-        };
+        const title = document.getElementById("original-title").value.trim();
+        const genre = document.getElementById("genre").value.trim();
+        const year = parseInt(document.getElementById("year").value);
+
+        if (!title || !genre || isNaN(year)) {
+          document.getElementById("status").textContent = "Please fill in all fields correctly.";
+          return;
+        }
 
         try {
-          await addDoc(collection(db, "films"), filmData);
+          await addDoc(collection(db, "films"), {
+            title,
+            genre,
+            year,
+            ownerId: user.uid
+          });
+
           document.getElementById("status").textContent = "🎉 Film added!";
-          document.getElementById("film-form").reset();
+          filmForm.reset();
         } catch (err) {
           console.error("Error adding film:", err);
           document.getElementById("status").textContent = "❌ Error adding film.";
@@ -208,5 +236,6 @@
       });
     });
   </script>
+
 </body>
 </html>
