@@ -48,14 +48,13 @@
 
     .film-row {
       display: flex;
-      align-items: center; /* ← this centers vertically */
+      align-items: center;
       background: #fff;
       padding: 12px 16px;
       border-radius: 10px;
       box-shadow: 0 2px 6px rgba(0,0,0,0.05);
       position: relative;
-  }
-
+    }
 
     .film-row img {
       width: 100px;
@@ -71,6 +70,7 @@
       gap: 8px 16px;
       flex: 1;
     }
+
     .film-info h3 {
       margin: 0 0 6px;
       font-size: 1.1rem;
@@ -104,19 +104,18 @@
     .edit-btn {
       position: absolute;
       top: 10px;
-      right: 80px; /* Positioned to the left of Delete */
+      right: 80px;
       background: #22c55e;
       border: none;
       color: white;
       border-radius: 4px;
       padding: 4px 8px;
       cursor: pointer;
-  }
+    }
 
     .edit-btn:hover {
       background: #16a34a;
-}
- 
+    }
   </style>
 </head>
 <body>
@@ -192,82 +191,59 @@
           </div>
           <button class="delete-btn" data-id="${id}">Delete</button>
           <button class="edit-btn" data-id="${id}">Edit</button>
-
         `;
 
+        // DELETE
         row.querySelector(".delete-btn").addEventListener("click", async () => {
           const confirmed = confirm(`Delete "${data.title}" from your collection?`);
           if (confirmed) {
             await deleteDoc(doc(db, "films", id));
-            loadFilms(uid); // Refresh
+            loadFilms(uid);
           }
+        });
 
-         row.querySelector(".edit-btn").addEventListener("click", () => {
-  const infoDiv = row.querySelector(".film-info");
-  const isEditing = row.classList.toggle("editing");
+        // EDIT
+        row.querySelector(".edit-btn").addEventListener("click", () => {
+          const infoDiv = row.querySelector(".film-info");
+          const isEditing = row.classList.toggle("editing");
 
-  if (isEditing) {
-    // Replace <p> with <input> for each field
-    infoDiv.querySelectorAll("p").forEach(p => {
-      const text = p.innerText.split(":").slice(1).join(":").trim();
-      const label = p.innerText.split(":")[0];
-      p.innerHTML = `<strong>${label}:</strong> <input type="text" value="${text}" style="width: 100%;">`;
-    });
+          if (isEditing) {
+            infoDiv.querySelectorAll("p").forEach(p => {
+              const text = p.innerText.split(":").slice(1).join(":").trim();
+              const label = p.innerText.split(":")[0];
+              p.innerHTML = `<strong>${label}:</strong> <input type="text" value="${text}" style="width: 100%;">`;
+            });
+            row.querySelector(".edit-btn").innerText = "Save";
+          } else {
+            const updatedData = {};
+            infoDiv.querySelectorAll("p").forEach(p => {
+              const label = p.innerText.split(":")[0];
+              const input = p.querySelector("input");
+              const value = input.value.trim();
 
-    // Replace Edit with Save
-    // GOOD: Delete logic
-row.querySelector(".delete-btn").addEventListener("click", async () => {
-  const confirmed = confirm(`Delete "${data.title}" from your collection?`);
-  if (confirmed) {
-    await deleteDoc(doc(db, "films", id));
-    loadFilms(uid);
-  }
-});
+              switch (label) {
+                case "PT Title": updatedData.pt_title = value; break;
+                case "Director": updatedData.director = value; break;
+                case "Actors": updatedData.actors = value; break;
+                case "Genre": updatedData.genre = value; break;
+                case "Duration": updatedData.duration = value; break;
+                case "Format": updatedData.format = value; break;
+                case "Edition": updatedData.edition = value; break;
+              }
 
-// GOOD: Edit logic – OUTSIDE the delete listener
-row.querySelector(".edit-btn").addEventListener("click", () => {
-  const infoDiv = row.querySelector(".film-info");
-  const isEditing = row.classList.toggle("editing");
+              p.innerHTML = `<strong>${label}:</strong> ${value || "—"}`;
+            });
 
-  if (isEditing) {
-    infoDiv.querySelectorAll("p").forEach(p => {
-      const text = p.innerText.split(":").slice(1).join(":").trim();
-      const label = p.innerText.split(":")[0];
-      p.innerHTML = `<strong>${label}:</strong> <input type="text" value="${text}" style="width: 100%;">`;
-    });
-
-    row.querySelector(".edit-btn").innerText = "Save";
-  } else {
-    const updatedData = {};
-    infoDiv.querySelectorAll("p").forEach(p => {
-      const label = p.innerText.split(":")[0];
-      const input = p.querySelector("input");
-      const value = input.value.trim();
-
-      switch (label) {
-        case "PT Title": updatedData.pt_title = value; break;
-        case "Director": updatedData.director = value; break;
-        case "Actors": updatedData.actors = value; break;
-        case "Genre": updatedData.genre = value; break;
-        case "Duration": updatedData.duration = value; break;
-        case "Format": updatedData.format = value; break;
-        case "Edition": updatedData.edition = value; break;
-      }
-
-      p.innerHTML = `<strong>${label}:</strong> ${value || "—"}`;
-    });
-
-    const filmRef = doc(db, "films", id);
-    updateDoc(filmRef, updatedData).then(() => {
-      row.querySelector(".edit-btn").innerText = "Edit";
-    });
-  }
-});
-
+            const filmRef = doc(db, "films", id);
+            updateDoc(filmRef, updatedData).then(() => {
+              row.querySelector(".edit-btn").innerText = "Edit";
+            });
+          }
+        });
 
         filmList.appendChild(row);
       });
-  }
+    }
   </script>
 
 </body>
