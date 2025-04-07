@@ -5,99 +5,98 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>🎬 My Film Collection</title>
   <style>
-  body {
-    font-family: 'Segoe UI', sans-serif;
-    background: #f0f2f5;
-    margin: 0;
-    padding: 20px;
-  }
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #f0f2f5;
+      margin: 0;
+      padding: 20px;
+    }
 
-  h1 {
-    text-align: center;
-    color: #333;
-  }
+    h1 {
+      text-align: center;
+      color: #333;
+    }
 
-  .top-bar {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 20px;
-  }
+    .top-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
 
-  .add-film-btn {
-    background: #4f46e5;
-    color: white;
-    padding: 10px 16px;
-    font-weight: bold;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    font-size: 1rem;
-    text-decoration: none;
-  }
+    .add-film-btn {
+      background: #4f46e5;
+      color: white;
+      padding: 10px 16px;
+      font-weight: bold;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 1rem;
+      text-decoration: none;
+    }
 
-  .add-film-btn:hover {
-    background: #4338ca;
-  }
+    .add-film-btn:hover {
+      background: #4338ca;
+    }
 
-  #film-list {
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-  }
+    #film-list {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
 
-  .film-row {
-    display: flex;
-    align-items: flex-start;
-    background: #fff;
-    padding: 12px 16px;
-    border-radius: 10px;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.05);
-    position: relative;
-  }
+    .film-row {
+      display: flex;
+      align-items: flex-start;
+      background: #fff;
+      padding: 12px 16px;
+      border-radius: 10px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+      position: relative;
+    }
 
-  .film-row img {
-    width: 100px;
-    height: auto;
-    object-fit: cover;
-    border-radius: 6px;
-    margin-right: 16px;
-  }
+    .film-row img {
+      width: 100px;
+      height: auto;
+      object-fit: cover;
+      border-radius: 6px;
+      margin-right: 16px;
+    }
 
-  .film-info {
-    display: flex;
-    flex-direction: column;
-    flex: 1;
-  }
+    .film-info {
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+    }
 
-  .film-info h3 {
-    margin: 0 0 6px;
-    font-size: 1.1rem;
-  }
+    .film-info h3 {
+      margin: 0 0 6px;
+      font-size: 1.1rem;
+    }
 
-  .film-info p {
-    margin: 2px 0;
-    font-size: 0.95rem;
-    color: #444;
-  }
+    .film-info p {
+      margin: 2px 0;
+      font-size: 0.95rem;
+      color: #444;
+    }
 
-  .delete-btn {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    background: #ff4d4f;
-    border: none;
-    color: white;
-    border-radius: 4px;
-    padding: 4px 8px;
-    cursor: pointer;
-  }
+    .delete-btn {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: #ff4d4f;
+      border: none;
+      color: white;
+      border-radius: 4px;
+      padding: 4px 8px;
+      cursor: pointer;
+    }
 
-  .delete-btn:hover {
-    background: #d9363e;
-  }
-</style>
-
+    .delete-btn:hover {
+      background: #d9363e;
+    }
+  </style>
 </head>
 <body>
 
@@ -156,32 +155,33 @@
         if (data.ownerId && data.ownerId !== uid) return;
 
         const row = document.createElement("div");
-row.className = "film-row";
-row.innerHTML = `
-  ${data.poster ? `<img src="${data.poster}" alt="Poster">` : '<div style="width:100px;height:140px;background:#eee;border-radius:6px;margin-right:16px;"></div>'}
-  <div class="film-info">
-    <h3>${data.original_title || data.title || '—'}</h3>
-    <p><strong>PT Title:</strong> ${data.pt_title || '—'}</p>
-    <p><strong>Director:</strong> ${data.director || '—'}</p>
-    <p><strong>Actors:</strong> ${data.actors || '—'}</p>
-    <p><strong>Genre:</strong> ${data.genre || '—'}</p>
-    <p><strong>Duration:</strong> ${data.duration ? data.duration + ' min' : '—'}</p>
-    <p><strong>Format:</strong> ${data.format || '—'}</p>
-    <p><strong>Edition:</strong> ${data.edition || '—'}</p>
-  </div>
-  <button class="delete-btn" data-id="${id}">Delete</button>
-`;
+        row.className = "film-row";
+        row.innerHTML = `
+          ${data.poster ? `<img src="${data.poster}" alt="Poster">` : '<div style="width:100px;height:140px;background:#eee;border-radius:6px;margin-right:16px;"></div>'}
+          <div class="film-info">
+            <h3>${data.original_title || data.title || '—'}</h3>
+            <p><strong>PT Title:</strong> ${data.pt_title || '—'}</p>
+            <p><strong>Director:</strong> ${data.director || '—'}</p>
+            <p><strong>Actors:</strong> ${data.actors || '—'}</p>
+            <p><strong>Genre:</strong> ${data.genre || '—'}</p>
+            <p><strong>Duration:</strong> ${data.duration ? data.duration + ' min' : '—'}</p>
+            <p><strong>Format:</strong> ${data.format || '—'}</p>
+            <p><strong>Edition:</strong> ${data.edition || '—'}</p>
+          </div>
+          <button class="delete-btn" data-id="${id}">Delete</button>
+        `;
 
-row.querySelector(".delete-btn").addEventListener("click", async () => {
-  const confirmed = confirm(`Delete "${data.title}" from your collection?`);
-  if (confirmed) {
-    await deleteDoc(doc(db, "films", id));
-    loadFilms(uid); // Refresh
-  }
-});
+        row.querySelector(".delete-btn").addEventListener("click", async () => {
+          const confirmed = confirm(`Delete "${data.title}" from your collection?`);
+          if (confirmed) {
+            await deleteDoc(doc(db, "films", id));
+            loadFilms(uid); // Refresh
+          }
+        });
 
-filmList.appendChild(row);
-
+        filmList.appendChild(row);
+      });
+    }
   </script>
 
 </body>
