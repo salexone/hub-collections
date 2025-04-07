@@ -140,7 +140,7 @@
           return;
         }
 
-        const film = data.results[0];
+        const film = data.results[0, 5];
 
         const movieDetailRes = await fetch(`https://api.themoviedb.org/3/movie/${film.id}?language=en-US&append_to_response=credits`, {
           headers: {
