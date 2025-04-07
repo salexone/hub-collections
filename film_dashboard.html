@@ -54,28 +54,28 @@
       border-radius: 10px;
       box-shadow: 0 2px 6px rgba(0,0,0,0.05);
       gap: 16px;
-      align-items: start;
+      align-items: center;
     }
 
-
     .film-row img {
-  width: 120px;
-  height: 160px;
-  object-fit: cover;
-  border-radius: 6px;
-}
-
-
+      width: 120px;
+      height: 160px;
+      object-fit: cover;
+      border-radius: 6px;
+    }
 
     .film-info {
       display: flex;
       flex-direction: column;
+      justify-content: space-between;
       flex: 1;
+      height: 100%;
     }
 
     .film-info h3 {
       margin: 0 0 8px;
       font-size: 1.1rem;
+      word-wrap: break-word;
     }
 
     .film-info p {
@@ -89,7 +89,6 @@
     .button-bar {
       margin-top: 10px;
       display: flex;
-      justify-content: flex-end;
       gap: 10px;
     }
 
@@ -113,6 +112,12 @@
 
     .edit-btn:hover {
       background: #16a34a;
+    }
+
+    @media (max-width: 700px) {
+      #film-list {
+        grid-template-columns: 1fr;
+      }
     }
   </style>
 </head>
@@ -176,16 +181,18 @@
         const row = document.createElement("div");
         row.className = "film-row";
         row.innerHTML = `
-          ${data.poster ? `<img src="${data.poster}" alt="Poster">` : '<div style="width:100px;height:140px;background:#eee;border-radius:6px;margin-right:16px;"></div>'}
+          ${data.poster ? `<img src="${data.poster}" alt="Poster">` : '<div style="width:120px;height:160px;background:#eee;border-radius:6px;"></div>'}
           <div class="film-info">
-            <h3>${data.original_title || data.title || '—'}</h3>
-            <p><strong>PT Title:</strong> ${data.pt_title || '—'}</p>
-            <p><strong>Director:</strong> ${data.director || '—'}</p>
-            <p><strong>Actors:</strong> ${data.actors || '—'}</p>
-            <p><strong>Genre:</strong> ${data.genre || '—'}</p>
-            <p><strong>Duration:</strong> ${data.duration ? data.duration + ' min' : '—'}</p>
-            <p><strong>Format:</strong> ${data.format || '—'}</p>
-            <p><strong>Edition:</strong> ${data.edition || '—'}</p>
+            <div>
+              <h3>${data.original_title || data.title || '—'}</h3>
+              <p><strong>PT Title:</strong> ${data.pt_title || '—'}</p>
+              <p><strong>Director:</strong> ${data.director || '—'}</p>
+              <p><strong>Actors:</strong> ${data.actors || '—'}</p>
+              <p><strong>Genre:</strong> ${data.genre || '—'}</p>
+              <p><strong>Duration:</strong> ${data.duration ? data.duration + ' min' : '—'}</p>
+              <p><strong>Format:</strong> ${data.format || '—'}</p>
+              <p><strong>Edition:</strong> ${data.edition || '—'}</p>
+            </div>
             <div class="button-bar">
               <button class="edit-btn" data-id="${id}">Edit</button>
               <button class="delete-btn" data-id="${id}">Delete</button>
@@ -204,7 +211,7 @@
 
         // Edit button
         row.querySelector(".edit-btn").addEventListener("click", async () => {
-          const infoDiv = row.querySelector(".film-info");
+          const infoDiv = row.querySelector(".film-info > div");
           const isEditing = row.classList.toggle("editing");
 
           if (isEditing) {
