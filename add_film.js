@@ -33,59 +33,76 @@ window.addEventListener("DOMContentLoaded", () => {
   const resultContainer = document.getElementById("search-result");
 
   document.getElementById("search-btn").addEventListener("click", async () => {
-    const query = document.getElementById("search-query").value.trim();
-    resultContainer.innerHTML = "";
+  const query = document.getElementById("search-query").value.trim();
+  const resultContainer = document.getElementById("search-result");
+  resultContainer.innerHTML = "";
 
-    if (!query) return;
+  if (!query) return;
 
-    try {
-      const response = await fetch(`https://api.themoviedb.org/3/search/movie?query=${encodeURIComponent(query)}&include_adult=false&language=en-US&page=1`, {
-        headers: {
-          Authorization: `Bearer ${TMDB_READ_TOKEN}`,
-          accept: "application/json"
-        }
-      });
-
-      const data = await response.json();
-      if (data.results.length === 0) {
-        resultContainer.textContent = "No results found.";
-        return;
+  try {
+    const response = await fetch(`https://api.themoviedb.org/3/search/movie?query=${encodeURIComponent(query)}&include_adult=false&language=en-US&page=1`, {
+      headers: {
+        Authorization: `Bearer ${TMDB_READ_TOKEN}`,
+        accept: "application/json"
       }
+    });
 
-      const film = data.results[0]; // You can expand to show multiple
-      const movieDetailRes = await fetch(`https://api.themoviedb.org/3/movie/${film.id}?language=en-US&append_to_response=credits`, {
-        headers: {
-          Authorization: `Bearer ${TMDB_READ_TOKEN}`,
-          accept: "application/json"
-        }
-      });
-      const movieDetails = await movieDetailRes.json();
+    const data = await response.json();
+    if (data.results.length === 0) {
+      resultContainer.textContent = "No results found.";
+      return;
+    }
 
+    // Show first 6 results
+    data.results.slice(0, 6).forEach(film => {
       const posterURL = film.poster_path
-        ? `https://image.tmdb.org/t/p/w500${film.poster_path}`
+        ? `https://image.tmdb.org/t/p/w200${film.poster_path}`
         : "";
 
-      resultContainer.innerHTML = `
-        <h3>${film.title} (${film.release_date?.slice(0, 4)})</h3>
-        ${posterURL ? `<img src="${posterURL}" style="max-height:200px;"><br/>` : ""}
-        <button id="select-film">Use This Film</button>
+      const filmCard = document.createElement("div");
+      filmCard.className = "border p-2 rounded-lg shadow-sm cursor-pointer hover:bg-gray-100 flex items-center gap-4 mb-2";
+      filmCard.innerHTML = `
+        ${posterURL ? `<img src="${posterURL}" class="w-16 rounded">` : ""}
+        <div>
+          <p class="font-medium">${film.title} (${film.release_date?.slice(0, 4) || "N/A"})</p>
+          <p class="text-xs text-gray-500">${film.original_title}</p>
+        </div>
       `;
 
-      document.getElementById("select-film").addEventListener("click", () => {
-        document.getElementById("poster").value = posterURL;
+      filmCard.addEventListener("click", async () => {
+        // Fetch full movie details
+        const movieDetailRes = await fetch(`https://api.themoviedb.org/3/movie/${film.id}?language=en-US&append_to_response=credits`, {
+          headers: {
+            Authorization: `Bearer ${TMDB_READ_TOKEN}`,
+            accept: "application/json"
+          }
+        });
+        const movieDetails = await movieDetailRes.json();
+
+        const fullPoster = film.poster_path
+          ? `https://image.tmdb.org/t/p/w500${film.poster_path}`
+          : "";
+
+        document.getElementById("poster").value = fullPoster;
         document.getElementById("original-title").value = film.original_title;
-        document.getElementById("pt-title").value = ""; // Manual
+        document.getElementById("pt-title").value = ""; // Still needs manual input
         document.getElementById("director").value = movieDetails.credits.crew.find(p => p.job === "Director")?.name || "";
         document.getElementById("actors").value = movieDetails.credits.cast.slice(0, 5).map(actor => actor.name).join(", ");
         document.getElementById("genre").value = movieDetails.genres.map(g => g.name).join(", ");
         document.getElementById("duration").value = movieDetails.runtime || "";
+
+        resultContainer.innerHTML = `<p class="text-green-700 font-medium">✅ "${film.title}" selected and form filled!</p>`;
       });
 
-    } catch (err) {
-      console.error("TMDb search error:", err);
-      resultContainer.textContent = "Error fetching data. Check console.";
-    }
-  });
+      resultContainer.appendChild(filmCard);
+    });
+
+  } catch (err) {
+    console.error("TMDb search error:", err);
+    resultContainer.textContent = "Error fetching data. Check console.";
+  }
+});
+
 
   // === Firestore Form Submission ===
   onAuthStateChanged(auth, (user) => {
