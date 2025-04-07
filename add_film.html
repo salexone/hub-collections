@@ -4,88 +4,209 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Add a Film</title>
-  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body {
+      margin: 0;
+      font-family: sans-serif;
+      background: #f4f4f9;
+      padding: 40px;
+    }
+    .container {
+      max-width: 600px;
+      margin: auto;
+      background: white;
+      padding: 30px;
+      border-radius: 16px;
+      box-shadow: 0 0 20px rgba(0,0,0,0.1);
+    }
+    h1, h2 {
+      text-align: center;
+    }
+    label {
+      display: block;
+      margin-top: 15px;
+      font-weight: bold;
+    }
+    input, select, button {
+      width: 100%;
+      padding: 10px;
+      margin-top: 5px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 1rem;
+    }
+    button {
+      background: #007bff;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #0056b3;
+    }
+    #search-result {
+      margin-top: 20px;
+      text-align: center;
+    }
+    img {
+      max-width: 100%;
+      border-radius: 8px;
+    }
+  </style>
 </head>
-<body class="bg-gray-100 text-gray-800 font-sans p-6">
-  <div class="max-w-3xl mx-auto bg-white p-6 rounded-2xl shadow-md">
-    <h1 class="text-2xl font-bold mb-4">🎬 Add a New Film</h1>
+<body>
+  <div class="container">
+    <h1>Add a New Film</h1>
 
-    <!-- Search Section -->
-    <div class="mb-6">
-      <h2 class="text-lg font-semibold mb-2">🔍 Search Movie</h2>
-      <div class="flex items-center gap-2 mb-2">
-        <input
-          type="text"
-          id="search-query"
-          placeholder="Enter movie title..."
-          class="flex-1 border border-gray-300 rounded-lg p-2"
-        />
-        <button
-          id="search-btn"
-          class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
-        >
-          Search
-        </button>
-      </div>
-      <div id="search-result" class="mt-4 text-sm"></div>
-    </div>
+    <h2>🔍 Search Movie</h2>
+    <input type="text" id="search-query" placeholder="Enter movie title..." />
+    <button id="search-btn">Search</button>
+    <div id="search-result"></div>
 
-    <!-- Film Form -->
-    <form id="film-form" class="space-y-4">
-      <input type="hidden" id="poster" />
-
-      <div>
-        <label class="block font-medium">Original Title</label>
-        <input type="text" id="original-title" class="w-full border border-gray-300 rounded-lg p-2" required />
-      </div>
-
-      <div>
-        <label class="block font-medium">Portuguese Title</label>
-        <input type="text" id="pt-title" class="w-full border border-gray-300 rounded-lg p-2" />
-      </div>
-
-      <div>
-        <label class="block font-medium">Director</label>
-        <input type="text" id="director" class="w-full border border-gray-300 rounded-lg p-2" />
-      </div>
-
-      <div>
-        <label class="block font-medium">Actors</label>
-        <input type="text" id="actors" class="w-full border border-gray-300 rounded-lg p-2" />
-      </div>
-
-      <div>
-        <label class="block font-medium">Genre</label>
-        <input type="text" id="genre" class="w-full border border-gray-300 rounded-lg p-2" required />
-      </div>
-
-      <div>
-        <label class="block font-medium">Duration (minutes)</label>
-        <input type="number" id="duration" class="w-full border border-gray-300 rounded-lg p-2" required />
-      </div>
-
-      <div>
-        <label class="block font-medium">Format</label>
-        <input type="text" id="format" class="w-full border border-gray-300 rounded-lg p-2" />
-      </div>
-
-      <div>
-        <label class="block font-medium">Edition</label>
-        <input type="text" id="edition" class="w-full border border-gray-300 rounded-lg p-2" />
-      </div>
-
-      <button
-        type="submit"
-        class="w-full bg-green-600 text-white font-semibold py-2 rounded-lg hover:bg-green-700"
-      >
-        ➕ Add Film
-      </button>
+    <form id="film-form">
+      <label>Poster: <input type="text" id="poster" /></label>
+      <label>Original Title: <input type="text" id="original-title" /></label>
+      <label>Portuguese Title: <input type="text" id="pt-title" /></label>
+      <label>Director: <input type="text" id="director" /></label>
+      <label>Actors: <input type="text" id="actors" /></label>
+      <label>Genre: <input type="text" id="genre" /></label>
+      <label>Duration (min): <input type="number" id="duration" /></label>
+      <label>Format:
+        <select id="format">
+          <option value="">Select format</option>
+          <option value="DVD">DVD</option>
+          <option value="Blu Ray">Blu Ray</option>
+          <option value="VHS">VHS</option>
+          <option value="UMD">UMD</option>
+          <option value="Laser Film">Laser Film</option>
+          <option value="Reel">Reel</option>
+        </select>
+      </label>
+      <label>Edition:
+        <select id="edition">
+          <option value="">Select edition</option>
+          <option value="Normal">Normal</option>
+          <option value="Colecionador">Colecionador</option>
+          <option value="Especial">Especial</option>
+          <option value="Deluxe">Deluxe</option>
+          <option value="2-Discos">2-Discos</option>
+        </select>
+      </label>
+      <br />
+      <button type="submit">Add Film</button>
     </form>
 
-    <p id="status" class="mt-4 text-center font-medium text-sm text-red-600"></p>
+    <p id="status"></p>
   </div>
 
-  <!-- Firebase Modules and App Logic -->
-  <script type="module" src="./add_film.js"></script>
+  <script type="module">
+    const TMDB_READ_TOKEN = "eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiI4ZTY2YmU0YWE5ODY2Y2I3MWVhM2EyNDI0Mzc3YWIxYyIsIm5iZiI6MTcyMTU1OTU1My43MTEsInN1YiI6IjY2OWNlYTAxOWUzMzVjODIwNzA5YzA3YyIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.dQMQmH0hl5bikBTkByc17Lf0Ur5B2o1z_HtGhgrC5a0";
+
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.11/firebase-app.js";
+    import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/9.6.11/firebase-firestore.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.6.11/firebase-auth.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyCUpzUXiwihGhBzGfGcEzcm1-Zf5gAyj5A",
+      authDomain: "hubcollections-a001e.firebaseapp.com",
+      projectId: "hubcollections-a001e",
+      storageBucket: "hubcollections-a001e.appspot.com",
+      messagingSenderId: "765474227726",
+      appId: "1:765474227726:web:480d8f30ed57cdf77e5e5f"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    const auth = getAuth(app);
+
+    document.getElementById("search-btn").addEventListener("click", async () => {
+      const query = document.getElementById("search-query").value.trim();
+      const resultContainer = document.getElementById("search-result");
+      resultContainer.innerHTML = "";
+
+      if (!query) return;
+
+      try {
+        const response = await fetch(`https://api.themoviedb.org/3/search/movie?query=${encodeURIComponent(query)}&include_adult=false&language=en-US&page=1`, {
+          headers: {
+            Authorization: `Bearer ${TMDB_READ_TOKEN}`,
+            accept: "application/json"
+          }
+        });
+
+        const data = await response.json();
+        if (data.results.length === 0) {
+          resultContainer.textContent = "No results found.";
+          return;
+        }
+
+        const film = data.results[0];
+
+        const movieDetailRes = await fetch(`https://api.themoviedb.org/3/movie/${film.id}?language=en-US&append_to_response=credits`, {
+          headers: {
+            Authorization: `Bearer ${TMDB_READ_TOKEN}`,
+            accept: "application/json"
+          }
+        });
+        const movieDetails = await movieDetailRes.json();
+
+        const posterURL = film.poster_path ? `https://image.tmdb.org/t/p/w500${film.poster_path}` : "";
+
+        resultContainer.innerHTML = `
+          <h3>Result: ${film.title} (${film.release_date?.slice(0, 4)})</h3>
+          ${posterURL ? `<img src="${posterURL}" style="max-height:200px;"><br/>` : ""}
+          <button id="select-film">Use This Film</button>
+        `;
+
+        document.getElementById("select-film").addEventListener("click", () => {
+          document.getElementById("poster").value = posterURL;
+          document.getElementById("original-title").value = film.original_title;
+          document.getElementById("pt-title").value = "";
+          document.getElementById("director").value = movieDetails.credits.crew.find(p => p.job === "Director")?.name || "";
+          document.getElementById("actors").value = movieDetails.credits.cast.slice(0, 2).map(actor => actor.name).join(", ");
+          document.getElementById("genre").value = movieDetails.genres.map(g => g.name).join(", ");
+          document.getElementById("duration").value = movieDetails.runtime || "";
+        });
+
+      } catch (err) {
+        console.error("TMDb search error:", err);
+        resultContainer.textContent = "Error fetching data. Check console.";
+      }
+    });
+
+    onAuthStateChanged(auth, (user) => {
+      if (!user) {
+        document.getElementById("status").textContent = "You must be logged in to add films.";
+        document.getElementById("film-form").style.display = "none";
+        return;
+      }
+
+      document.getElementById("film-form").addEventListener("submit", async (e) => {
+        e.preventDefault();
+
+        const filmData = {
+          poster: document.getElementById("poster").value,
+          title: document.getElementById("original-title").value.trim(),
+          titlePt: document.getElementById("pt-title").value.trim(),
+          director: document.getElementById("director").value.trim(),
+          actors: document.getElementById("actors").value.trim(),
+          genre: document.getElementById("genre").value.trim(),
+          duration: parseInt(document.getElementById("duration").value),
+          format: document.getElementById("format").value,
+          edition: document.getElementById("edition").value,
+          ownerId: user.uid
+        };
+
+        try {
+          await addDoc(collection(db, "films"), filmData);
+          document.getElementById("status").textContent = "🎉 Film added!";
+          document.getElementById("film-form").reset();
+        } catch (err) {
+          console.error("Error adding film:", err);
+          document.getElementById("status").textContent = "❌ Error adding film.";
+        }
+      });
+    });
+  </script>
 </body>
 </html>
