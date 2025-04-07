@@ -65,11 +65,11 @@
     }
 
     .film-info {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-      gap: 8px 16px;
-      flex: 1;
-    }
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+  }
+
 
     .film-info h3 {
       margin: 0 0 6px;
@@ -80,10 +80,11 @@
       margin: 0;
       font-size: 0.95rem;
       color: #444;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
+      white-space: normal;  /* allow wrapping */
+      overflow: visible;    /* let it grow */
+      text-overflow: unset; /* no "..." */
+  }
+
 
     .delete-btn {
       position: absolute;
