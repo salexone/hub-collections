@@ -42,19 +42,16 @@
 
     #film-list {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(450px, 1fr)); /* 2 per row on large screens */
+      grid-template-columns: repeat(2, 1fr);
       gap: 20px;
     }
 
-
     .film-row {
       display: flex;
-      align-items: center;
       background: #fff;
-      padding: 12px 16px;
+      padding: 16px;
       border-radius: 10px;
       box-shadow: 0 2px 6px rgba(0,0,0,0.05);
-      position: relative;
     }
 
     .film-row img {
@@ -68,36 +65,36 @@
     .film-info {
       display: flex;
       flex-direction: column;
-      gap: 6px;
-  }
-
+      flex: 1;
+    }
 
     .film-info h3 {
-      margin: 0 0 6px;
+      margin: 0 0 8px;
       font-size: 1.1rem;
     }
 
     .film-info p {
-      margin: 0;
+      margin: 4px 0;
       font-size: 0.95rem;
       color: #444;
       white-space: normal;
-      overflow: visible;
-      text-overflow: unset;
-  }
+      word-wrap: break-word;
+    }
 
+    .button-bar {
+      margin-top: 10px;
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+    }
 
-
-
-    .delete-btn {
-      position: absolute;
-      top: 10px;
-      right: 10px;
+    .delete-btn,
+    .edit-btn {
       background: #ff4d4f;
       border: none;
       color: white;
       border-radius: 4px;
-      padding: 4px 8px;
+      padding: 6px 10px;
       cursor: pointer;
     }
 
@@ -106,15 +103,7 @@
     }
 
     .edit-btn {
-      position: absolute;
-      top: 10px;
-      right: 80px;
       background: #22c55e;
-      border: none;
-      color: white;
-      border-radius: 4px;
-      padding: 4px 8px;
-      cursor: pointer;
     }
 
     .edit-btn:hover {
@@ -165,7 +154,7 @@
       if (user) {
         loadFilms(user.uid);
       } else {
-        window.location.href = "index.html"; // redirect if not logged in
+        window.location.href = "index.html";
       }
     });
 
@@ -192,12 +181,14 @@
             <p><strong>Duration:</strong> ${data.duration ? data.duration + ' min' : '—'}</p>
             <p><strong>Format:</strong> ${data.format || '—'}</p>
             <p><strong>Edition:</strong> ${data.edition || '—'}</p>
+            <div class="button-bar">
+              <button class="edit-btn" data-id="${id}">Edit</button>
+              <button class="delete-btn" data-id="${id}">Delete</button>
+            </div>
           </div>
-          <button class="delete-btn" data-id="${id}">Delete</button>
-          <button class="edit-btn" data-id="${id}">Edit</button>
         `;
 
-        // DELETE
+        // Delete button
         row.querySelector(".delete-btn").addEventListener("click", async () => {
           const confirmed = confirm(`Delete "${data.title}" from your collection?`);
           if (confirmed) {
@@ -206,8 +197,8 @@
           }
         });
 
-        // EDIT
-        row.querySelector(".edit-btn").addEventListener("click", () => {
+        // Edit button
+        row.querySelector(".edit-btn").addEventListener("click", async () => {
           const infoDiv = row.querySelector(".film-info");
           const isEditing = row.classList.toggle("editing");
 
@@ -238,10 +229,8 @@
               p.innerHTML = `<strong>${label}:</strong> ${value || "—"}`;
             });
 
-            const filmRef = doc(db, "films", id);
-            updateDoc(filmRef, updatedData).then(() => {
-              row.querySelector(".edit-btn").innerText = "Edit";
-            });
+            await updateDoc(doc(db, "films", id), updatedData);
+            row.querySelector(".edit-btn").innerText = "Edit";
           }
         });
 
