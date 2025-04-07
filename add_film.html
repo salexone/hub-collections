@@ -4,91 +4,88 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Add a Film</title>
+  <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body>
-  <h1>Add a New Film</h1>
-  
-  <h2>🔍 Search Movie</h2>
-  <input type="text" id="search-query" placeholder="Enter movie title..." />
-  <button id="search-btn">Search</button>
+<body class="bg-gray-100 text-gray-800 font-sans p-6">
+  <div class="max-w-3xl mx-auto bg-white p-6 rounded-2xl shadow-md">
+    <h1 class="text-2xl font-bold mb-4">🎬 Add a New Film</h1>
 
-<div id="search-result" style="margin-top: 20px;"></div>
+    <!-- Search Section -->
+    <div class="mb-6">
+      <h2 class="text-lg font-semibold mb-2">🔍 Search Movie</h2>
+      <div class="flex items-center gap-2 mb-2">
+        <input
+          type="text"
+          id="search-query"
+          placeholder="Enter movie title..."
+          class="flex-1 border border-gray-300 rounded-lg p-2"
+        />
+        <button
+          id="search-btn"
+          class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
+        >
+          Search
+        </button>
+      </div>
+      <div id="search-result" class="mt-4 text-sm"></div>
+    </div>
 
-  <form id="film-form">
-  <label>Poster: <input type="text" id="poster" /></label><br />
-  <label>Title: <input type="text" id="original-title" /></label><br />
-  <label>Portuguese Title: <input type="text" id="pt-title" /></label><br />
-  <label>Director: <input type="text" id="director" /></label><br />
-  <label>Actors: <input type="text" id="actors" /></label><br />
-  <label>Genre: <input type="text" id="genre" /></label><br />
-  <label>Duration (min): <input type="number" id="duration" /></label><br />
-  <label>Format: <input type="text" id="format" /></label><br />
-  <label>Edition: <input type="text" id="edition" /></label><br /><br />
-  <button type="submit">Add Film</button>
-</form>
+    <!-- Film Form -->
+    <form id="film-form" class="space-y-4">
+      <input type="hidden" id="poster" />
 
-<p id="status"></p>
+      <div>
+        <label class="block font-medium">Original Title</label>
+        <input type="text" id="original-title" class="w-full border border-gray-300 rounded-lg p-2" required />
+      </div>
 
+      <div>
+        <label class="block font-medium">Portuguese Title</label>
+        <input type="text" id="pt-title" class="w-full border border-gray-300 rounded-lg p-2" />
+      </div>
 
-  <p id="status"></p>
+      <div>
+        <label class="block font-medium">Director</label>
+        <input type="text" id="director" class="w-full border border-gray-300 rounded-lg p-2" />
+      </div>
 
-  <!-- Firebase Modules -->
-  <script type="module" src="add_film.js">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.11/firebase-app.js";
-    import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/9.6.11/firebase-firestore.js";
-    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.6.11/firebase-auth.js";
+      <div>
+        <label class="block font-medium">Actors</label>
+        <input type="text" id="actors" class="w-full border border-gray-300 rounded-lg p-2" />
+      </div>
 
-    const firebaseConfig = {
-      apiKey: "AIzaSyCUpzUXiwihGhBzGfGcEzcm1-Zf5gAyj5A",
-      authDomain: "hubcollections-a001e.firebaseapp.com",
-      projectId: "hubcollections-a001e",
-      storageBucket: "hubcollections-a001e.appspot.com",
-      messagingSenderId: "765474227726",
-      appId: "1:765474227726:web:480d8f30ed57cdf77e5e5f",
-      measurementId: "G-62C119XRJ9"
-    };
+      <div>
+        <label class="block font-medium">Genre</label>
+        <input type="text" id="genre" class="w-full border border-gray-300 rounded-lg p-2" required />
+      </div>
 
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
-    const auth = getAuth(app);
+      <div>
+        <label class="block font-medium">Duration (minutes)</label>
+        <input type="number" id="duration" class="w-full border border-gray-300 rounded-lg p-2" required />
+      </div>
 
-    onAuthStateChanged(auth, (user) => {
-      if (!user) {
-        document.getElementById("status").textContent = "You must be logged in to add films.";
-        document.getElementById("film-form").style.display = "none";
-        return;
-      }
+      <div>
+        <label class="block font-medium">Format</label>
+        <input type="text" id="format" class="w-full border border-gray-300 rounded-lg p-2" />
+      </div>
 
-      const filmForm = document.getElementById("film-form");
+      <div>
+        <label class="block font-medium">Edition</label>
+        <input type="text" id="edition" class="w-full border border-gray-300 rounded-lg p-2" />
+      </div>
 
-      filmForm.addEventListener("submit", async (e) => {
-        e.preventDefault();
+      <button
+        type="submit"
+        class="w-full bg-green-600 text-white font-semibold py-2 rounded-lg hover:bg-green-700"
+      >
+        ➕ Add Film
+      </button>
+    </form>
 
-        const title = document.getElementById("title").value.trim();
-        const genre = document.getElementById("genre").value.trim();
-        const year = parseInt(document.getElementById("year").value);
+    <p id="status" class="mt-4 text-center font-medium text-sm text-red-600"></p>
+  </div>
 
-        if (!title || !genre || isNaN(year)) {
-          document.getElementById("status").textContent = "Please fill in all fields correctly.";
-          return;
-        }
-
-        try {
-          await addDoc(collection(db, "films"), {
-            title,
-            genre,
-            year,
-            ownerId: user.uid
-          });
-
-          document.getElementById("status").textContent = "🎉 Film added!";
-          filmForm.reset();
-        } catch (err) {
-          console.error("Error adding film:", err);
-          document.getElementById("status").textContent = "❌ Error adding film.";
-        }
-      });
-    });
-  </script>
+  <!-- Firebase Modules and App Logic -->
+  <script type="module" src="./add_film.js"></script>
 </body>
 </html>
