@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <link rel="stylesheet" href="header.css">
+
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>🎬 My Film Collection</title>
@@ -122,6 +124,15 @@
   </style>
 </head>
 <body>
+<div id="header-container"></div>
+
+<script>
+  fetch('header.html')
+    .then(response => response.text())
+    .then(data => {
+      document.getElementById('header-container').innerHTML = data;
+    });
+</script>
 
   <div class="top-bar">
     <h1>🎞️ Your Film Library</h1>
