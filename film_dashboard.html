@@ -45,8 +45,8 @@
 
     .film-row {
       display: grid;
-      grid-template-columns: 100px 2fr 1fr 1fr 1fr;
-      grid-template-areas: "thumb title director country year";
+      grid-template-columns: 100px 2fr 1fr 1fr 1fr auto;
+      grid-template-areas: "thumb title director country year actions";
       align-items: center;
       background: #fff;
       padding: 12px 16px;
@@ -94,6 +94,36 @@
       grid-area: year;
     }
 
+    .actions-cell {
+      grid-area: actions;
+      text-align: center;
+    }
+
+    .actions-cell button {
+      margin: 4px;
+      padding: 6px 10px;
+      border: none;
+      border-radius: 4px;
+      color: white;
+      cursor: pointer;
+    }
+
+    .edit-btn {
+      background: #22c55e;
+    }
+
+    .edit-btn:hover {
+      background: #16a34a;
+    }
+
+    .delete-btn {
+      background: #ff4d4f;
+    }
+
+    .delete-btn:hover {
+      background: #d9363e;
+    }
+
     .info-collapse {
       padding: 0 2rem 1rem;
       background: #fdfdfd;
@@ -134,6 +164,8 @@
     limit,
     startAfter,
     getDocs,
+    deleteDoc,
+    doc
   } from "https://www.gstatic.com/firebasejs/9.6.11/firebase-firestore.js";
   import {
     getAuth,
@@ -201,6 +233,10 @@
         <div class="director-cell">${film.director || '—'}</div>
         <div class="country-cell">${film.country || '—'}</div>
         <div class="year-cell">${film.year || '—'}</div>
+        <div class="actions-cell">
+          <button class="edit-btn" onclick="alert('Edit not implemented')">Edit</button>
+          <button class="delete-btn" onclick="handleDelete('${film.id}', '${film.original_title || film.title}')">Delete</button>
+        </div>
       `;
 
       const collapse = document.createElement("div");
@@ -213,13 +249,24 @@
         <p><strong>Edition:</strong> ${film.edition || '—'}</p>
       `;
 
-      row.addEventListener("click", () => {
-        collapse.style.display = collapse.style.display === "none" || !collapse.style.display ? "block" : "none";
+      row.addEventListener("click", (e) => {
+        if (!e.target.closest('button')) {
+          collapse.style.display = collapse.style.display === "none" || !collapse.style.display ? "block" : "none";
+        }
       });
 
       filmList.appendChild(row);
       filmList.appendChild(collapse);
     });
+  }
+
+  window.handleDelete = async (id, title) => {
+    const confirmed = confirm(`Delete "${title}" from your collection?`);
+    if (confirmed) {
+      await deleteDoc(doc(db, "films", id));
+      filmData = filmData.filter(f => f.id !== id);
+      displayFilms();
+    }
   }
 
   sortBtn.addEventListener("click", () => {
