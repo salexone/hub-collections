@@ -100,14 +100,13 @@
 <body>
   <div id="header-container"></div>
   <div class="container">
-<script>
-  fetch('header.html')
-    .then(response => response.text())
-    .then(data => {
-      document.getElementById('header-container').innerHTML = data;
-    });
-</script>
-
+    <script>
+      fetch('header.html')
+        .then(response => response.text())
+        .then(data => {
+          document.getElementById('header-container').innerHTML = data;
+        });
+    </script>
 
     <h2>🔍 Search Movie</h2>
     <input type="text" id="search-query" placeholder="Enter movie title..." />
@@ -123,12 +122,16 @@
       <input type="text" id="pt-title" placeholder="Insert manually if not available" />
       <label>Director:</label>
       <input type="text" id="director" readonly />
-      <label>Actors (Top 2):</label>
+      <label>Actors (Top 4):</label>
       <input type="text" id="actors" readonly />
-      <label>Genre:</label>
+      <label>Genre (Top 2):</label>
       <input type="text" id="genre" readonly />
       <label>Duration (minutes):</label>
       <input type="number" id="duration" readonly />
+      <label>Year:</label>
+      <input type="number" id="year" readonly />
+      <label>Country:</label>
+      <input type="text" id="country" readonly />
 
       <label>Format:</label>
       <select id="format" required>
@@ -208,7 +211,6 @@
           });
           const details = await detailRes.json();
           const director = details.credits.crew.find(p => p.job === "Director")?.name || "";
-          const actors = details.credits.cast.slice(0, 2).map(a => a.name).join(", ");
           const poster = film.poster_path ? `https://image.tmdb.org/t/p/w500${film.poster_path}` : "";
 
           const card = document.createElement("div");
@@ -224,9 +226,11 @@
             document.getElementById("original-title").value = film.original_title || film.title;
             document.getElementById("pt-title").value = film.title || "";
             document.getElementById("director").value = director;
-            document.getElementById("actors").value = actors;
-            document.getElementById("genre").value = details.genres.map(g => g.name).join(", ");
+            document.getElementById("actors").value = details.credits.cast.slice(0, 4).map(a => a.name).join(", ");
+            document.getElementById("genre").value = details.genres.slice(0, 2).map(g => g.name).join(", ");
             document.getElementById("duration").value = details.runtime || "";
+            document.getElementById("year").value = film.release_date?.slice(0, 4) || "";
+            document.getElementById("country").value = details.production_countries[0]?.name || "";
           });
 
           resultContainer.appendChild(card);
@@ -255,6 +259,8 @@
           actors: document.getElementById("actors").value,
           genre: document.getElementById("genre").value,
           duration: parseInt(document.getElementById("duration").value),
+          year: parseInt(document.getElementById("year").value),
+          country: document.getElementById("country").value,
           format: document.getElementById("format").value,
           edition: document.getElementById("edition").value,
           ownerId: user.uid
