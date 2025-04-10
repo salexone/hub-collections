@@ -203,19 +203,27 @@
   });
 
   async function loadFilms(initial = true) {
-    const q = query(collection(db, "films"), orderBy("original_title"), limit(20));
-    const snapshot = await getDocs(initial ? q : startAfter(lastVisible));
+    let q;
+    if (initial || !lastVisible) {
+      q = query(collection(db, "films"), orderBy("original_title"), limit(20));
+    } else {
+      q = query(collection(db, "films"), orderBy("original_title"), startAfter(lastVisible), limit(20));
+    }
+
+    const snapshot = await getDocs(q);
+
+    if (!snapshot.empty) {
+      lastVisible = snapshot.docs[snapshot.docs.length - 1];
+    }
 
     snapshot.forEach(docSnap => {
       const data = docSnap.data();
       const id = docSnap.id;
       if (data.ownerId && data.ownerId !== uid) return;
-      filmData.push({ id, ...data });
+      if (!filmData.find(f => f.id === id)) {
+        filmData.push({ id, ...data });
+      }
     });
-
-    if (!snapshot.empty) {
-      lastVisible = snapshot.docs[snapshot.docs.length - 1];
-    }
 
     displayFilms();
   }
