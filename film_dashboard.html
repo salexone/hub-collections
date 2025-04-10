@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>🎬  Hub Collections - Films</title>
+  <title>🎮  Hub Collections - Films</title>
   <link rel="stylesheet" href="header.css">
   <style>
     body {
@@ -45,7 +45,8 @@
 
     .film-row {
       display: grid;
-      grid-template-columns: 100px 1fr 1fr 1fr;
+      grid-template-columns: 100px 2fr 1fr 1fr 1fr;
+      grid-template-areas: "thumb title director country year";
       align-items: center;
       background: #fff;
       padding: 12px 16px;
@@ -60,6 +61,7 @@
     }
 
     .thumbnail {
+      grid-area: thumb;
       width: 80px;
       height: 100px;
       object-fit: cover;
@@ -67,14 +69,29 @@
     }
 
     .title-block {
+      grid-area: title;
       display: flex;
-      align-items: center;
-      gap: 16px;
+      flex-direction: column;
+      justify-content: center;
+      gap: 4px;
     }
 
     .title-block h3 {
       margin: 0;
       font-size: 1rem;
+      color: #111;
+    }
+
+    .director-cell {
+      grid-area: director;
+    }
+
+    .country-cell {
+      grid-area: country;
+    }
+
+    .year-cell {
+      grid-area: year;
     }
 
     .info-collapse {
@@ -117,8 +134,6 @@
     limit,
     startAfter,
     getDocs,
-    doc,
-    deleteDoc,
   } from "https://www.gstatic.com/firebasejs/9.6.11/firebase-firestore.js";
   import {
     getAuth,
@@ -179,13 +194,13 @@
       const row = document.createElement("div");
       row.className = "film-row";
       row.innerHTML = `
+        ${film.poster ? `<img class="thumbnail" src="${film.poster}" />` : '<div class="thumbnail" style="background:#ccc"></div>'}
         <div class="title-block">
-          ${film.poster ? `<img class="thumbnail" src="${film.poster}" />` : '<div class="thumbnail" style="background:#ccc"></div>'}
           <h3>${film.original_title || film.title || '—'}</h3>
         </div>
-        <div>${film.director || '—'}</div>
-        <div>${film.country || '—'}</div>
-        <div>${film.year || '—'}</div>
+        <div class="director-cell">${film.director || '—'}</div>
+        <div class="country-cell">${film.country || '—'}</div>
+        <div class="year-cell">${film.year || '—'}</div>
       `;
 
       const collapse = document.createElement("div");
