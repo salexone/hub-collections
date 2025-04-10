@@ -1,114 +1,272 @@
-// Replace the loadFilms function and update onAuthStateChanged accordingly
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>🎬 Hub Collections - Films</title>
+  <link rel="stylesheet" href="header.css" />
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #f4f4f4;
+      margin: 0;
+      padding: 20px;
+    }
 
-onAuthStateChanged(auth, (user) => {
-  if (user) {
-    loadFilms(user.uid);
-    document.getElementById("sort-select").addEventListener("change", () => {
-      loadFilms(user.uid); // reload on sort change
-    });
-  } else {
-    window.location.href = "index.html";
-  }
-});
+    h1 {
+      text-align: center;
+      color: #222;
+    }
 
-async function loadFilms(uid) {
-  filmList.innerHTML = "";
-  const snapshot = await getDocs(collection(db, "films"));
+    #film-list {
+      max-width: 1000px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
 
-  const films = [];
-  snapshot.forEach(docSnap => {
-    const data = docSnap.data();
-    const id = docSnap.id;
-    if (data.ownerId && data.ownerId !== uid) return;
-    films.push({ id, data });
-  });
+    .film-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr 100px;
+      align-items: center;
+      background: #fff;
+      border-radius: 8px;
+      padding: 10px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+      cursor: pointer;
+      transition: background 0.2s ease;
+    }
 
-  // Sort by title A-Z
-  const sortVal = document.getElementById("sort-select").value;
-  if (sortVal === "az") {
-    films.sort((a, b) =>
-      (a.data.original_title || a.data.title || '').localeCompare(b.data.original_title || b.data.title || '')
-    );
-  }
+    .film-row:hover {
+      background: #f1f1f1;
+    }
 
-  films.forEach(({ id, data }) => {
-    const row = document.createElement("div");
-    row.className = "film-row";
-    row.innerHTML = `
-      <div class="film-left">
-        ${data.poster ? `<img class="film-thumb" src="${data.poster}" alt="Poster">` : '<div class="film-thumb" style="background:#ccc;"></div>'}
-        <div class="film-title">${data.original_title || data.title || '—'}</div>
-      </div>
-      <div class="film-cell">${data.director || '—'}</div>
-      <div class="film-cell">${data.country || '—'}</div>
-      <div class="film-cell">${data.year || '—'}</div>
-    `;
+    .film-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
 
-    const details = document.createElement("div");
-    details.className = "film-details";
-    details.innerHTML = `
-      <p><strong>PT Title:</strong> ${data.pt_title || '—'}</p>
-      <p><strong>Actors:</strong> ${data.actors || '—'}</p>
-      <p><strong>Genre:</strong> ${data.genre || '—'}</p>
-      <p><strong>Duration:</strong> ${data.duration ? data.duration + ' min' : '—'}</p>
-      <p><strong>Format:</strong> ${data.format || '—'}</p>
-      <p><strong>Edition:</strong> ${data.edition || '—'}</p>
-      <div class="button-bar">
-        <button class="edit-btn" data-id="${id}">Edit</button>
-        <button class="delete-btn" data-id="${id}">Delete</button>
-      </div>
-    `;
+    .film-thumb {
+      width: 48px;
+      height: 64px;
+      object-fit: cover;
+      border-radius: 4px;
+      flex-shrink: 0;
+    }
 
-    row.addEventListener("click", () => {
-      const isVisible = details.style.display === "block";
-      document.querySelectorAll('.film-details').forEach(el => el.style.display = "none");
-      details.style.display = isVisible ? "none" : "block";
-    });
+    .film-title {
+      font-weight: bold;
+      font-size: 1rem;
+      color: #222;
+    }
 
-    details.querySelector(".delete-btn").addEventListener("click", async (e) => {
-      e.stopPropagation();
-      const confirmed = confirm(`Delete "${data.title}"?`);
-      if (confirmed) {
-        await deleteDoc(doc(db, "films", id));
-        loadFilms(uid);
+    .film-cell {
+      font-size: 0.95rem;
+      color: #444;
+    }
+
+    .film-details {
+      display: none;
+      background: #fff;
+      padding: 10px 16px 10px 76px;
+      margin-bottom: 6px;
+      border-radius: 0 0 8px 8px;
+      font-size: 0.9rem;
+      color: #444;
+    }
+
+    .film-details p {
+      margin: 4px 0;
+    }
+
+    .button-bar {
+      display: flex;
+      gap: 8px;
+      justify-content: flex-end;
+      margin-top: 8px;
+    }
+
+    .edit-btn,
+    .delete-btn {
+      font-size: 0.8rem;
+      padding: 4px 10px;
+      border: none;
+      border-radius: 4px;
+      color: white;
+      cursor: pointer;
+    }
+
+    .edit-btn {
+      background: #22c55e;
+    }
+
+    .edit-btn:hover {
+      background: #16a34a;
+    }
+
+    .delete-btn {
+      background: #ef4444;
+    }
+
+    .delete-btn:hover {
+      background: #dc2626;
+    }
+
+    @media (max-width: 700px) {
+      .film-row {
+        grid-template-columns: 1fr;
       }
-    });
+    }
+  </style>
+</head>
+<body>
+  <div id="header-container"></div>
 
-    details.querySelector(".edit-btn").addEventListener("click", async (e) => {
-      e.stopPropagation();
-      const btn = e.target;
-      const editing = btn.innerText === "Save";
-      const ps = details.querySelectorAll("p");
-      const updatedData = {};
+  <script>
+    fetch('header.html')
+      .then(response => response.text())
+      .then(data => {
+        document.getElementById('header-container').innerHTML = data;
+      });
+  </script>
 
-      if (!editing) {
-        ps.forEach(p => {
-          const label = p.innerText.split(":")[0];
-          const value = p.innerText.split(":").slice(1).join(":").trim();
-          p.innerHTML = `<strong>${label}:</strong> <input type="text" value="${value}" style="width: 100%;">`;
-        });
-        btn.innerText = "Save";
+  <h1>🎬 Your Film Collection</h1>
+  <div id="film-list"></div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.11/firebase-app.js";
+    import {
+      getFirestore,
+      collection,
+      getDocs,
+      deleteDoc,
+      doc,
+      updateDoc
+    } from "https://www.gstatic.com/firebasejs/9.6.11/firebase-firestore.js";
+    import {
+      getAuth,
+      onAuthStateChanged
+    } from "https://www.gstatic.com/firebasejs/9.6.11/firebase-auth.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyCUpzUXiwihGhBzGfGcEzcm1-Zf5gAyj5A",
+      authDomain: "hubcollections-a001e.firebaseapp.com",
+      projectId: "hubcollections-a001e",
+      storageBucket: "hubcollections-a001e.appspot.com",
+      messagingSenderId: "765474227726",
+      appId: "1:765474227726:web:480d8f30ed57cdf77e5e5f"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    const auth = getAuth(app);
+    const filmList = document.getElementById("film-list");
+
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        loadFilms(user.uid);
       } else {
-        ps.forEach(p => {
-          const label = p.querySelector("strong").innerText.replace(":", "");
-          const val = p.querySelector("input").value.trim();
-          switch (label) {
-            case "PT Title": updatedData.pt_title = val; break;
-            case "Actors": updatedData.actors = val; break;
-            case "Genre": updatedData.genre = val; break;
-            case "Duration": updatedData.duration = val; break;
-            case "Format": updatedData.format = val; break;
-            case "Edition": updatedData.edition = val; break;
-          }
-          p.innerHTML = `<strong>${label}:</strong> ${val || '—'}`;
-        });
-
-        await updateDoc(doc(db, "films", id), updatedData);
-        btn.innerText = "Edit";
+        window.location.href = "index.html";
       }
     });
 
-    filmList.appendChild(row);
-    filmList.appendChild(details);
-  });
-}
+    async function loadFilms(uid) {
+      filmList.innerHTML = "";
+      const snapshot = await getDocs(collection(db, "films"));
+
+      snapshot.forEach(docSnap => {
+        const data = docSnap.data();
+        const id = docSnap.id;
+
+        if (data.ownerId && data.ownerId !== uid) return;
+
+        const row = document.createElement("div");
+        row.className = "film-row";
+        row.innerHTML = `
+          <div class="film-left">
+            ${data.poster ? `<img class="film-thumb" src="${data.poster}" alt="Poster">` : '<div class="film-thumb" style="background:#ccc;"></div>'}
+            <div class="film-title">${data.original_title || data.title || '—'}</div>
+          </div>
+          <div class="film-cell">${data.director || '—'}</div>
+          <div class="film-cell">${data.country || '—'}</div>
+          <div class="film-cell">${data.year || '—'}</div>
+        `;
+
+        const details = document.createElement("div");
+        details.className = "film-details";
+        details.innerHTML = `
+          <p><strong>PT Title:</strong> ${data.pt_title || '—'}</p>
+          <p><strong>Actors:</strong> ${data.actors || '—'}</p>
+          <p><strong>Genre:</strong> ${data.genre || '—'}</p>
+          <p><strong>Duration:</strong> ${data.duration ? data.duration + ' min' : '—'}</p>
+          <p><strong>Format:</strong> ${data.format || '—'}</p>
+          <p><strong>Edition:</strong> ${data.edition || '—'}</p>
+          <div class="button-bar">
+            <button class="edit-btn" data-id="${id}">Edit</button>
+            <button class="delete-btn" data-id="${id}">Delete</button>
+          </div>
+        `;
+
+        // Toggle expand for only the clicked film
+        row.addEventListener("click", () => {
+          const isVisible = details.style.display === "block";
+          document.querySelectorAll('.film-details').forEach(el => el.style.display = "none");
+          details.style.display = isVisible ? "none" : "block";
+        });
+
+        // Delete
+        details.querySelector(".delete-btn").addEventListener("click", async (e) => {
+          e.stopPropagation();
+          const confirmed = confirm(`Delete "${data.title}"?`);
+          if (confirmed) {
+            await deleteDoc(doc(db, "films", id));
+            loadFilms(uid);
+          }
+        });
+
+        // Edit
+        details.querySelector(".edit-btn").addEventListener("click", async (e) => {
+          e.stopPropagation();
+          const btn = e.target;
+          const editing = btn.innerText === "Save";
+          const ps = details.querySelectorAll("p");
+          const updatedData = {};
+
+          if (!editing) {
+            ps.forEach(p => {
+              const label = p.innerText.split(":")[0];
+              const value = p.innerText.split(":").slice(1).join(":").trim();
+              p.innerHTML = `<strong>${label}:</strong> <input type="text" value="${value}" style="width: 100%;">`;
+            });
+            btn.innerText = "Save";
+          } else {
+            ps.forEach(p => {
+              const label = p.querySelector("strong").innerText.replace(":", "");
+              const val = p.querySelector("input").value.trim();
+
+              switch (label) {
+                case "PT Title": updatedData.pt_title = val; break;
+                case "Actors": updatedData.actors = val; break;
+                case "Genre": updatedData.genre = val; break;
+                case "Duration": updatedData.duration = val; break;
+                case "Format": updatedData.format = val; break;
+                case "Edition": updatedData.edition = val; break;
+              }
+
+              p.innerHTML = `<strong>${label}:</strong> ${val || '—'}`;
+            });
+
+            await updateDoc(doc(db, "films", id), updatedData);
+            btn.innerText = "Edit";
+          }
+        });
+
+        filmList.appendChild(row);
+        filmList.appendChild(details);
+      });
+    }
+  </script>
+</body>
+</html>
