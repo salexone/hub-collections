@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>🎮 Hub Collections - Video Games</title>
-  <link rel="stylesheet" href="header.css">
+  <title>🎮 Hub Collections - Videogames</title>
+  <link rel="stylesheet" href="header.css" />
   <style>
     body {
       font-family: 'Inter', sans-serif;
@@ -12,6 +12,11 @@
       color: #333;
       margin: 0;
       padding: 0;
+    }
+
+    h1 {
+      text-align: center;
+      color: #333;
     }
 
     .search-sort-bar {
@@ -41,7 +46,7 @@
 
     .game-row {
       display: grid;
-      grid-template-columns: 100px 2fr 1fr 1fr auto;
+      grid-template-columns: 100px 2fr 1fr 1fr 1fr auto;
       align-items: center;
       background: #fff;
       padding: 12px 16px;
@@ -68,12 +73,16 @@
       color: #111;
     }
 
-    .system-cell, .year-cell {
-      text-align: center;
+    .info-collapse {
+      padding: 0 2rem 1rem;
+      background: #fdfdfd;
+      margin: 0 2rem;
+      display: none;
     }
 
-    .actions-cell {
-      text-align: center;
+    .info-collapse p {
+      margin: 4px 0;
+      font-size: 0.9rem;
     }
 
     .actions-cell button {
@@ -93,132 +102,155 @@
       background: #ff4d4f;
     }
 
-    .info-collapse {
-      display: none;
-      padding: 0 2rem 1rem;
-      background: #fdfdfd;
-      margin: 0 2rem;
+    .edit-btn:hover {
+      background: #16a34a;
+    }
+
+    .delete-btn:hover {
+      background: #d9363e;
     }
   </style>
 </head>
 <body>
-<div id="header-container"></div>
-<script>
-  fetch('header.html')
-    .then(res => res.text())
-    .then(data => {
-      document.getElementById('header-container').innerHTML = data;
-    });
-</script>
+  <div id="header-container"></div>
+  <script>
+    fetch('header.html')
+      .then(response => response.text())
+      .then(data => {
+        document.getElementById('header-container').innerHTML = data;
+      });
+  </script>
 
-<div class="search-sort-bar">
-  <input type="text" id="searchInput" class="search-input" placeholder="Search games..." />
-  <button id="sortBtn" class="sort-btn">Sort A-Z</button>
-</div>
+  <div class="search-sort-bar">
+    <input type="text" id="searchInput" class="search-input" placeholder="Search games..." />
+    <button id="sortBtn" class="sort-btn">Sort A-Z</button>
+  </div>
 
-<div id="game-list"></div>
+  <div id="game-list"></div>
 
-<script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.11/firebase-app.js";
-  import {
-    getFirestore, collection, query, orderBy, limit, startAfter,
-    getDocs, deleteDoc, doc
-  } from "https://www.gstatic.com/firebasejs/9.6.11/firebase-firestore.js";
-  import {
-    getAuth, onAuthStateChanged
-  } from "https://www.gstatic.com/firebasejs/9.6.11/firebase-auth.js";
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.11/firebase-app.js";
+    import {
+      getFirestore,
+      collection,
+      query,
+      orderBy,
+      getDocs,
+      deleteDoc,
+      doc
+    } from "https://www.gstatic.com/firebasejs/9.6.11/firebase-firestore.js";
+    import {
+      getAuth,
+      onAuthStateChanged
+    } from "https://www.gstatic.com/firebasejs/9.6.11/firebase-auth.js";
 
-  const firebaseConfig = {
-    apiKey: "AIzaSyCUpzUXiwihGhBzGfGcEzcm1-Zf5gAyj5A",
-    authDomain: "hubcollections-a001e.firebaseapp.com",
-    projectId: "hubcollections-a001e",
-    storageBucket: "hubcollections-a001e.appspot.com",
-    messagingSenderId: "765474227726",
-    appId: "1:765474227726:web:480d8f30ed57cdf77e5e5f"
-  };
+    const firebaseConfig = {
+      apiKey: "AIzaSyCUpzUXiwihGhBzGfGcEzcm1-Zf5gAyj5A",
+      authDomain: "hubcollections-a001e.firebaseapp.com",
+      projectId: "hubcollections-a001e",
+      storageBucket: "hubcollections-a001e.appspot.com",
+      messagingSenderId: "765474227726",
+      appId: "1:765474227726:web:480d8f30ed57cdf77e5e5f"
+    };
 
-  const app = initializeApp(firebaseConfig);
-  const db = getFirestore(app);
-  const auth = getAuth(app);
-  const gameList = document.getElementById("game-list");
-  const searchInput = document.getElementById("searchInput");
-  const sortBtn = document.getElementById("sortBtn");
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    const auth = getAuth(app);
+    const gameList = document.getElementById("game-list");
+    const searchInput = document.getElementById("searchInput");
+    const sortBtn = document.getElementById("sortBtn");
 
-  let gameData = [];
-  let sortedAsc = true;
-  let lastVisible = null;
-  let uid = null;
+    let gameData = [];
+    let sortedAsc = true;
+    let uid = null;
 
-  onAuthStateChanged(auth, (user) => {
-    if (user) {
-      uid = user.uid;
-      loadGames();
-    } else {
-      window.location.href = "index.html";
-    }
-  });
-
-  async function loadGames(initial = true) {
-    let q = query(collection(db, "videogames"), orderBy("title"), limit(20));
-    if (!initial && lastVisible) {
-      q = query(collection(db, "videogames"), orderBy("title"), startAfter(lastVisible), limit(20));
-    }
-
-    const snapshot = await getDocs(q);
-
-    if (!snapshot.empty) {
-      lastVisible = snapshot.docs[snapshot.docs.length - 1];
-    }
-
-    snapshot.forEach(docSnap => {
-      const data = docSnap.data();
-      const id = docSnap.id;
-      if (data.ownerId && data.ownerId !== uid) return;
-      if (!gameData.find(g => g.id === id)) {
-        gameData.push({ id, ...data });
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        uid = user.uid;
+        loadGames();
+      } else {
+        window.location.href = "index.html";
       }
     });
 
-    displayGames();
-  }
-
-  function displayGames(filtered = gameData) {
-    gameList.innerHTML = "";
-    filtered.forEach(game => {
-      const row = document.createElement("div");
-      row.className = "game-row";
-      row.innerHTML = `
-        ${game.poster ? `<img class="thumbnail" src="${game.poster}" />` : '<div class="thumbnail" style="background:#ccc"></div>'}
-        <div class="title-block"><h3>${game.title || '—'}</h3></div>
-        <div class="system-cell">${game.system || '—'}</div>
-        <div class="year-cell">${game.year || '—'}</div>
-        <div class="actions-cell">
-          <button class="edit-btn" onclick="alert('Edit not implemented')">Edit</button>
-          <button class="delete-btn" onclick="handleDelete('${game.id}', '${game.title}')">Delete</button>
-        </div>
-      `;
-
-      const collapse = document.createElement("div");
-      collapse.className = "info-collapse";
-      collapse.innerHTML = `
-        <p><strong>Main Developer:</strong> ${game.main_developer || '—'}</p>
-        <p><strong>Main Publisher:</strong> ${game.main_publisher || '—'}</p>
-        <p><strong>Genre:</strong> ${game.genre || '—'}</p>
-        <p><strong>Series:</strong> ${game.series || '—'}</p>
-      `;
-
-      row.addEventListener("click", (e) => {
-        if (!e.target.closest('button')) {
-          collapse.style.display = collapse.style.display === "none" || !collapse.style.display ? "block" : "none";
-        }
+    async function loadGames() {
+      const q = query(collection(db, "videogames"), orderBy("title"));
+      const snapshot = await getDocs(q);
+      snapshot.forEach(docSnap => {
+        const data = docSnap.data();
+        const id = docSnap.id;
+        if (data.ownerId && data.ownerId !== uid) return;
+        gameData.push({ id, ...data });
       });
+      displayGames();
+    }
 
-      gameList.appendChild(row);
-      gameList.appendChild(collapse);
+    function displayGames(filtered = gameData) {
+      gameList.innerHTML = "";
+      filtered.forEach((game) => {
+        const row = document.createElement("div");
+        row.className = "game-row";
+        row.innerHTML = `
+          ${game.poster ? `<img class="thumbnail" src="${game.poster}" />` : '<div class="thumbnail" style="background:#ccc"></div>'}
+          <div class="title-block"><h3>${game.title || '—'}</h3></div>
+          <div>${game.system || '—'}</div>
+          <div>${game.year || '—'}</div>
+          <div class="actions-cell">
+            <button class="edit-btn" onclick="alert('Edit not implemented')">Edit</button>
+            <button class="delete-btn" onclick="handleDelete('${game.id}', '${game.title}')">Delete</button>
+          </div>
+        `;
+
+        const collapse = document.createElement("div");
+        collapse.className = "info-collapse";
+        collapse.innerHTML = `
+          <p><strong>Developer:</strong> ${game.developer || '—'}</p>
+          <p><strong>Publisher:</strong> ${game.publisher || '—'}</p>
+          <p><strong>Genre:</strong> ${game.genre || '—'}</p>
+          <p><strong>Series:</strong> ${game.series || '—'}</p>
+          <p><strong>Region:</strong> ${game.region || '—'}</p>
+          <p><strong>Conteúdo:</strong> ${game.content || '—'}</p>
+          <p><strong>Edition:</strong> ${game.edition || '—'}</p>
+        `;
+
+        row.addEventListener("click", (e) => {
+          if (!e.target.closest('button')) {
+            collapse.style.display = collapse.style.display === "none" || !collapse.style.display ? "block" : "none";
+          }
+        });
+
+        gameList.appendChild(row);
+        gameList.appendChild(collapse);
+      });
+    }
+
+    window.handleDelete = async (id, title) => {
+      const confirmed = confirm(`Delete "${title}" from your collection?`);
+      if (confirmed) {
+        await deleteDoc(doc(db, "videogames", id));
+        gameData = gameData.filter(g => g.id !== id);
+        displayGames();
+      }
+    };
+
+    sortBtn.addEventListener("click", () => {
+      sortedAsc = !sortedAsc;
+      const sorted = [...gameData].sort((a, b) => {
+        const titleA = (a.title || '').toLowerCase();
+        const titleB = (b.title || '').toLowerCase();
+        return sortedAsc ? titleA.localeCompare(titleB) : titleB.localeCompare(titleA);
+      });
+      displayGames(sorted);
     });
-  }
 
-  window.handleDelete = async (id, title) => {
-    const confirmed = confirm(`Delete "${title}" from your game collection?`);
-    if (confirmed) {
-      await deleteDoc(doc(db, "videog
+    searchInput.addEventListener("input", e => {
+      const val = e.target.value.toLowerCase();
+      const filtered = gameData.filter(g => {
+        return [g.title, g.system, g.year, g.developer, g.publisher, g.genre, g.series]
+          .some(field => field && field.toString().toLowerCase().includes(val));
+      });
+      displayGames(filtered);
+    });
+  </script>
+</body>
+</html>
