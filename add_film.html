@@ -27,7 +27,7 @@
       font-size: 2rem;
       margin-bottom: 1.5rem;
     }
-    h2 {
+    h3{
       margin-top: 2rem;
       font-size: 1.25rem;
       color: #555;
@@ -109,25 +109,25 @@
         });
     </script>
 
-    <h2>🔍 Search Movie</h2>
+    <h3>🔍 Search Movie</h3>
     <input type="text" id="search-query" placeholder="Enter movie title..." />
     <button id="search-btn">Search</button>
     <div id="search-result"></div>
 
     <form id="film-form">
-      <label>Poster URL:</label>
+      <label>Poster:</label>
       <input type="text" id="poster" readonly />
       <label>Original Title:</label>
       <input type="text" id="original-title" readonly />
-      <label>Portuguese Title (Portugal):</label>
+      <label>Portuguese Title:</label>
       <input type="text" id="pt-title" placeholder="Insert manually if not available" />
       <label>Director:</label>
       <input type="text" id="director" readonly />
-      <label>Actors (Top 4):</label>
+      <label>Actors:</label>
       <input type="text" id="actors" readonly />
-      <label>Genre (Top 2):</label>
+      <label>Genre:</label>
       <input type="text" id="genre" readonly />
-      <label>Duration (minutes):</label>
+      <label>Duration:</label>
       <input type="number" id="duration" readonly />
       <label>Year:</label>
       <input type="number" id="year" readonly />
@@ -141,7 +141,7 @@
         <option>Blu Ray</option>
         <option>VHS</option>
         <option>UMD</option>
-        <option>Laser Film</option>
+        <option>Laser Disc</option>
         <option>Reel</option>
       </select>
 
@@ -155,7 +155,7 @@
         <option>2-Discos</option>
       </select>
 
-      <button type="submit">➕ Add Film</button>
+      <button type="submit">Add Film</button>
     </form>
 
     <p id="status"></p>
