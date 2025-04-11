@@ -1,1 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>🎮 Add Videogame</title>
+  <link rel="stylesheet" href="header.css">
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #f9fafb;
+      margin: 0;
+      padding: 0;
+    }
+    .container {
+      max-width: 600px;
+      margin: 2rem auto;
+      padding: 2rem;
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+    }
+    h2 {
+      text-align: center;
+      margin-bottom: 1.5rem;
+    }
+    label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-weight: 500;
+    }
+    input, select {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 1.2rem;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 1rem;
+    }
+    button {
+      background-color: #4f46e5;
+      color: white;
+      border: none;
+      padding: 10px 16px;
+      border-radius: 8px;
+      font-size: 1rem;
+      cursor: pointer;
+      width: 100%;
+    }
+    button:hover {
+      background-color: #4338ca;
+    }
+  </style>
+</head>
+<body>
+<div id="header-container"></div>
+<script>
+  fetch('header.html')
+    .then(res => res.text())
+    .then(data => {
+      document.getElementById('header-container').innerHTML = data;
+    });
+</script>
+<div class="container">
+  <h2>🎮 Add a New Videogame</h2>
+  <form id="videogameForm">
+    <label for="poster">Poster URL</label>
+    <input type="text" id="poster" name="poster">
 
+    <label for="title">Title</label>
+    <input type="text" id="title" name="title" required>
+
+    <label for="system">System</label>
+    <select id="system" name="system" required>
+      <option value="">Select System</option>
+      <option>Atari</option>
+      <option>Famicom</option>
+      <option>Super Famicom</option>
+      <option>Famicom Disk</option>
+      <option>NES</option>
+      <option>SNES</option>
+      <option>GB</option>
+      <option>GB Color</option>
+      <option>GBA</option>
+      <option>DS</option>
+      <option>3DS</option>
+      <option>Gamecube</option>
+      <option>Wii</option>
+      <option>Wii-U</option>
+      <option>Switch</option>
+      <option>Master System</option>
+      <option>Mega Drive</option>
+      <option>Sega Saturn</option>
+      <option>Gamegear</option>
+      <option>Dreamcast</option>
+      <option>PlayStation</option>
+      <option>PlayStation 2</option>
+      <option>PlayStation 3</option>
+      <option>PlayStation 4</option>
+      <option>PlayStation 5</option>
+      <option>PSP</option>
+      <option>PS Vita</option>
+      <option>WonderSwan</option>
+      <option>Xbox</option>
+      <option>Xbox 360</option>
+      <option>Xbox One</option>
+      <option>Xbox XS</option>
+    </select>
+
+    <label for="year">Year</label>
+    <input type="number" id="year" name="year">
+
+    <label for="main_developer">Main Developer</label>
+    <input type="text" id="main_developer" name="main_developer">
+
+    <label for="main_publisher">Main Publisher</label>
+    <input type="text" id="main_publisher" name="main_publisher">
+
+    <label for="genre">Genre</label>
+    <input type="text" id="genre" name="genre">
+
+    <label for="series">Series</label>
+    <input type="text" id="series" name="series">
+
+    <label for="region">Region</label>
+    <select id="region" name="region">
+      <option value="">Select Region</option>
+      <option>JAP</option>
+      <option>PAL</option>
+      <option>USA</option>
+      <option>FREE</option>
+    </select>
+
+    <label for="conteudo">Conteúdo</label>
+    <select id="conteudo" name="conteudo">
+      <option value="">Select</option>
+      <option>Completo</option>
+      <option>Cartucho</option>
+      <option>CD</option>
+      <option>Caixa</option>
+    </select>
+
+    <label for="edition">Edition</label>
+    <select id="edition" name="edition">
+      <option value="">Select</option>
+      <option>Normal</option>
+      <option>Especial</option>
+      <option>Collectors</option>
+      <option>Limited</option>
+    </select>
+
+    <button type="submit">Add Game</button>
+  </form>
+</div>
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.11/firebase-app.js";
+  import {
+    getFirestore, collection, addDoc
+  } from "https://www.gstatic.com/firebasejs/9.6.11/firebase-firestore.js";
+  import {
+    getAuth, onAuthStateChanged
+  } from "https://www.gstatic.com/firebasejs/9.6.11/firebase-auth.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyCUpzUXiwihGhBzGfGcEzcm1-Zf5gAyj5A",
+    authDomain: "hubcollections-a001e.firebaseapp.com",
+    projectId: "hubcollections-a001e",
+    storageBucket: "hubcollections-a001e.appspot.com",
+    messagingSenderId: "765474227726",
+    appId: "1:765474227726:web:480d8f30ed57cdf77e5e5f"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+  const auth = getAuth(app);
+
+  const form = document.getElementById("videogameForm");
+
+  onAuthStateChanged(auth, (user) => {
+    if (!user) {
+      window.location.href = "index.html";
+    }
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      const data = {
+        poster: form.poster.value,
+        title: form.title.value,
+        system: form.system.value,
+        year: parseInt(form.year.value) || null,
+        main_developer: form.main_developer.value,
+        main_publisher: form.main_publisher.value,
+        genre: form.genre.value,
+        series: form.series.value,
+        region: form.region.value,
+        conteudo: form.conteudo.value,
+        edition: form.edition.value,
+        ownerId: user.uid
+      };
+
+      try {
+        await addDoc(collection(db, "videogames"), data);
+        alert("Videogame added successfully!");
+        form.reset();
+      } catch (err) {
+        console.error("Error adding videogame:", err);
+        alert("Something went wrong.");
+      }
+    });
+  });
+</script>
+</body>
+</html>
