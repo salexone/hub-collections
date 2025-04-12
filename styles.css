@@ -140,8 +140,8 @@
 
     .thumbnail {
       grid-area: thumb;
-      width: 100px;
-      height: 130px;
+      width: 80px;
+      height: 120px;
       object-fit: cover;
       border-radius: 4px;
     }
