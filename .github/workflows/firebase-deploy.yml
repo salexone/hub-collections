@@ -1,0 +1,38 @@
+name: Firebase Deploy
+
+on:
+  push:
+    branches: [main]  # Or "master" depending on your repo
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+
+      - name: Install Firebase Tools
+        run: npm install -g firebase-tools
+
+      - name: Write Firebase Service Account Key
+        run: echo '${{ secrets.FIREBASE_SERVICE_ACCOUNT_KEY }}' > "${HOME}/firebase-key.json"
+
+      - name: Authenticate with Firebase
+        run: firebase use --project hubcollections-a001e
+        env:
+          GOOGLE_APPLICATION_CREDENTIALS: ${{ runner.temp }}/firebase-key.json
+
+      - name: Deploy to Firebase
+        env:
+          GOOGLE_APPLICATION_CREDENTIALS: ${{ runner.temp }}/firebase-key.json
+        run: |
+          cd functions
+          npm install
+          cd ..
+          firebase deploy --only functions,hosting --project hubcollections-a001e
