@@ -65,8 +65,12 @@
   <form id="videogameForm">
  
     <label for="gameSearch">🔍 Search Game Title</label>
-    <input type="text" id="gameSearch" placeholder="Search for a game...">
+    <div style="display: flex; gap: 0.5rem; margin-bottom: 1.2rem;">
+    <input type="text" id="gameSearch" placeholder="Search for a game..." style="flex: 1;">
+    <button type="button" id="searchBtn" style="flex-shrink: 0; width: auto; padding: 10px 12px;">Search</button>
+    </div>
     <div id="searchResults" style="border: 1px solid #ddd; border-radius: 8px; padding: 0.5rem; margin-bottom: 1.5rem;"></div>
+
 
     <label for="poster">Poster URL</label>
     <input type="text" id="poster" name="poster">
@@ -276,6 +280,11 @@
     document.getElementById('searchResults').innerHTML = '';
     document.getElementById('gameSearch').value = '';
   }
+    document.getElementById('searchBtn').addEventListener('click', () => {
+    const input = document.getElementById('gameSearch');
+    const event = new Event('input');
+    input.dispatchEvent(event);
+});
 
   
 </script>
