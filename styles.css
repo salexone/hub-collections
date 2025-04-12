@@ -203,13 +203,12 @@
     }
 
     .info-collapse {
-      padding: 1rem 2rem 1rem;
+      padding: -1rem 2rem 1rem;
       background: #fdfdfd;
       margin: 2rem 2rem;
       display: none;
     }
 
     .info-collapse p {
-      margin-top: 2rem;
       font-size: 0.9rem;
     }
