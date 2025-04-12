@@ -152,6 +152,7 @@
       flex-direction: column;
       justify-content: center;
       gap: 4px;
+        margin: 20px;
     }
 
     .title-block h3 {
@@ -204,12 +205,13 @@
 
     .info-collapse {
       padding: 2px;
-      background: #fdfdfd;
-      margin: 2px 0px 0px 0px;
+      background: #ebe6e6;
+      margin: 5px 0px 5px 31px;
       display: none;
 
     }
 
     .info-collapse p {
       font-size: 0.9rem;
+        margin: 15px;
     }
