@@ -140,8 +140,8 @@
 
     .thumbnail {
       grid-area: thumb;
-      width: 80px;
-      height: 100px;
+      width: 100px;
+      height: 120px;
       object-fit: cover;
       border-radius: 4px;
     }
@@ -203,9 +203,9 @@
     }
 
     .info-collapse {
-      padding: -1rem 2rem 1rem;
+      padding: 2rem 1rem;
       background: #fdfdfd;
-      margin: 2rem 2rem;
+      margin: 2rem;
       display: none;
     }
 
