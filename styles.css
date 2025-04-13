@@ -206,16 +206,15 @@
     }
 
     .info-collapse {
-        background: #ebe6e6;
-      margin: 5px 0px 5px 31px;
-      overflow: hidden;
-      max-height: 0;
-      transition: max-height 0.3s ease-out, padding 0.3s ease-out;
-      padding: 0 2px; /* No vertical padding when hidden */
+  background: #ebe6e6;
+  margin: 5px 0px 5px 31px;
+  overflow: hidden;
+  max-height: 0;
+  transition: max-height 0.3s ease-out, padding 0.3s ease-out;
+  padding: 0 2px;
+}
+.info-collapse p {
+      font-size: 0.9rem;
+        margin: 5px;
     }
-
-    .info-collapse.open {
-      max-height: 500px; /* Adjust as needed depending on content */
-      padding: 10px 2px;
-        }
 
