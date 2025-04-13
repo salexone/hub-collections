@@ -211,12 +211,12 @@ async function loadGames() {
         const collapse = document.createElement("div");
         collapse.className = "info-collapse";
         collapse.innerHTML = `
-          <p><strong>Developer:</strong> ${game.developer || '—'}</p>
-          <p><strong>Publisher:</strong> ${game.publisher || '—'}</p>
+          <p><strong>Developer:</strong> ${game.main_developer || '—'}</p>
+          <p><strong>Publisher:</strong> ${game.main_publisher || '—'}</p>
           <p><strong>Genre:</strong> ${game.genre || '—'}</p>
           <p><strong>Series:</strong> ${game.series || '—'}</p>
           <p><strong>Region:</strong> ${game.region || '—'}</p>
-          <p><strong>Conteúdo:</strong> ${game.content || '—'}</p>
+          <p><strong>Conteúdo:</strong> ${game.conteudo || '—'}</p>
           <p><strong>Edition:</strong> ${game.edition || '—'}</p>
         `;
 
