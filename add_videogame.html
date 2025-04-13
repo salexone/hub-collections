@@ -208,24 +208,35 @@
 
   // Fill form with RAWG data
   async function fillForm(game) {
-    const detailsRes = await fetch(`https://api.rawg.io/api/games/${game.id}?key=${RAWG_API_KEY}`);
-    const details = await detailsRes.json();
+  const detailsRes = await fetch(`https://api.rawg.io/api/games/${game.id}?key=${RAWG_API_KEY}`);
+  const details = await detailsRes.json();
 
-    document.getElementById('title').value = details.name || '';
-    document.getElementById('year').value = details.released ? new Date(details.released).getFullYear() : '';
-    document.getElementById('main_developer').value = details.developers?.[0]?.name || '';
-    document.getElementById('main_publisher').value = details.publishers?.[0]?.name || '';
-    document.getElementById('genre').value = details.genres?.[0]?.name || '';
-    document.getElementById('series').value = details.series?.name || '';
+  document.getElementById('title').value = details.name || '';
+  document.getElementById('year').value = details.released ? new Date(details.released).getFullYear() : '';
+  document.getElementById('main_developer').value = details.developers?.[0]?.name || '';
+  document.getElementById('main_publisher').value = details.publishers?.[0]?.name || '';
+  document.getElementById('genre').value = details.genres?.[0]?.name || '';
+  document.getElementById('series').value = details.series?.name || '';
 
-    // Prefer original artwork / official poster
+  // Try Steam Poster First
+  const steamStore = details.stores?.find(store => store.store?.slug === "steam");
+  if (steamStore) {
+    const steamUrl = steamStore.url;
+    const steamIdMatch = steamUrl.match(/app\/(\d+)/);
+    if (steamIdMatch) {
+      const steamId = steamIdMatch[1];
+      document.getElementById('poster').value = `https://cdn.cloudflare.steamstatic.com/steam/apps/${steamId}/header.jpg`;
+    }
+  } else {
+    // Fallback to background image
     const posterUrl = details.background_image_additional || details.background_image || '';
     document.getElementById('poster').value = posterUrl;
-
-    // Clear search
-    document.getElementById('searchResults').innerHTML = '';
-    document.getElementById('gameSearch').value = '';
   }
+
+  document.getElementById('searchResults').innerHTML = '';
+  document.getElementById('gameSearch').value = '';
+}
+
 
   // Trigger search manually via button
   document.getElementById('searchBtn').addEventListener('click', () => {
