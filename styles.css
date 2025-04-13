@@ -1,6 +1,6 @@
     body {
       font-family: 'Inter', sans-serif;
-      background: #949494;
+      background: #fff;
       color: #333;
       margin: 0;
       padding: 0;
@@ -131,7 +131,8 @@
       background: #fff;
       padding: 12px 16px;
       margin: 0 2rem;
-      border-bottom: 1px solid #ddd;
+      border-bottom: 5px solid #ddd;
+      border-top: 5px solid #ddd;
       cursor: pointer;
       transition: background 0.2s;
     }
