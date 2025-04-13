@@ -1,6 +1,6 @@
     body {
       font-family: 'Inter', sans-serif;
-      background: #cdcfd1;
+      background: #949494;
       color: #333;
       margin: 0;
       padding: 0;
@@ -119,6 +119,8 @@
       padding: 8px 12px;
       border-radius: 6px;
       cursor: pointer;
+      width: 100px;
+      height: 50px;  
     }
 
     .film-row {
