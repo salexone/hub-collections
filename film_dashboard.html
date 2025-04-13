@@ -130,9 +130,10 @@
 
       row.addEventListener("click", (e) => {
         if (!e.target.closest('button')) {
-          collapse.style.display = collapse.style.display === "none" || !collapse.style.display ? "block" : "none";
+          collapse.classList.toggle("open");
         }
       });
+
 
       filmList.appendChild(row);
       filmList.appendChild(collapse);
