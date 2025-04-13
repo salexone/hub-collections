@@ -26,6 +26,8 @@
   background-color: inherit;
   font-family: inherit;
   margin: 0;
+  border-radius: 0px;
+  
 }
 
 .navbar a:hover, .dropdown:hover .dropbtn {
