@@ -131,7 +131,6 @@
       background: #fff;
       padding: 12px 16px;
       margin: 0 2rem;
-      border-bottom: 5px solid #ddd;
       border-top: 5px solid #ddd;
       cursor: pointer;
       transition: background 0.2s;
@@ -216,5 +215,5 @@
 
     .info-collapse p {
       font-size: 0.9rem;
-        margin: 15px;
+        margin: 5px;
     }
