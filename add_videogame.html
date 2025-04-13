@@ -136,6 +136,7 @@
   const app = initializeApp(firebaseConfig);
   const db = getFirestore(app);
   const auth = getAuth(app);
+  const RAWG_API_KEY = "543f77f07873489dbce05b60648cdd0b";
 
   const form = document.getElementById("videogameForm");
 
@@ -172,41 +173,28 @@
       }
     });
   });
-  async function getAccessToken() {
-    const response = await fetch(
-      'https://id.twitch.tv/oauth2/token?client_id=tvna954erunoc4fqqfc13tajfshj6h&client_secret=nj1ganxd7wgde7m1e24yaeso5gojwq&grant_type=client_credentials',
-      { method: 'POST' }
-    );
-    const data = await response.json();
-    return data.access_token;
+
+  // RAWG Search
+  async function searchRAWG(query) {
+    const res = await fetch(`https://api.rawg.io/api/games?key=${RAWG_API_KEY}&search=${encodeURIComponent(query)}&page_size=5`);
+    const data = await res.json();
+    return data.results;
   }
 
-  let accessToken = null;
-  getAccessToken().then(token => {
-    accessToken = token;
-  });
-
+  // On input
   document.getElementById('gameSearch').addEventListener('input', async function () {
     const query = this.value.trim();
-    if (query.length < 3 || !accessToken) return;
+    if (query.length < 3) return;
 
-    const response = await fetch('https://api.igdb.com/v4/games', {
-      method: 'POST',
-      headers: {
-        'Client-ID': 'tvna954erunoc4fqqfc13tajfshj6h',
-        'Authorization': `Bearer ${accessToken}`,
-        'Content-Type': 'text/plain'
-      },
-      body: `search "${query}"; fields name, first_release_date, cover.url, genres.name, involved_companies.company.name, involved_companies.publisher, collection.name; limit 5;`
-    });
-
-    const games = await response.json();
-    showResults(games);
+    const results = await searchRAWG(query);
+    showResults(results);
   });
 
+  // Populate results in the dropdown
   function showResults(games) {
     const resultsDiv = document.getElementById('searchResults');
     resultsDiv.innerHTML = '';
+
     games.forEach(game => {
       const div = document.createElement('div');
       div.style.cursor = 'pointer';
@@ -218,30 +206,34 @@
     });
   }
 
-  function fillForm(game) {
-    document.getElementById('title').value = game.name || '';
-    document.getElementById('year').value = game.first_release_date ? new Date(game.first_release_date * 1000).getFullYear() : '';
-    
-    const dev = game.involved_companies?.find(c => c.publisher === false);
-    const pub = game.involved_companies?.find(c => c.publisher === true);
-    document.getElementById('main_developer').value = dev?.company?.name || '';
-    document.getElementById('main_publisher').value = pub?.company?.name || '';
-    
-    document.getElementById('genre').value = game.genres?.[0]?.name || '';
-    document.getElementById('series').value = game.collection?.name || '';
-    document.getElementById('poster').value = game.cover?.url ? `https:${game.cover.url.replace('t_thumb', 't_cover_big')}` : '';
+  // Fill form with RAWG data
+  async function fillForm(game) {
+    const detailsRes = await fetch(`https://api.rawg.io/api/games/${game.id}?key=${RAWG_API_KEY}`);
+    const details = await detailsRes.json();
 
-    // Clear the search UI
+    document.getElementById('title').value = details.name || '';
+    document.getElementById('year').value = details.released ? new Date(details.released).getFullYear() : '';
+    document.getElementById('main_developer').value = details.developers?.[0]?.name || '';
+    document.getElementById('main_publisher').value = details.publishers?.[0]?.name || '';
+    document.getElementById('genre').value = details.genres?.[0]?.name || '';
+    document.getElementById('series').value = details.series?.name || '';
+
+    // Prefer original artwork / official poster
+    const posterUrl = details.background_image_additional || details.background_image || '';
+    document.getElementById('poster').value = posterUrl;
+
+    // Clear search
     document.getElementById('searchResults').innerHTML = '';
     document.getElementById('gameSearch').value = '';
   }
-    document.getElementById('searchBtn').addEventListener('click', () => {
+
+  // Trigger search manually via button
+  document.getElementById('searchBtn').addEventListener('click', () => {
     const input = document.getElementById('gameSearch');
     const event = new Event('input');
     input.dispatchEvent(event);
-});
-
-  
+  });
 </script>
+
 </body>
 </html>
