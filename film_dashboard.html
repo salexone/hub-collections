@@ -130,9 +130,16 @@
 
       row.addEventListener("click", (e) => {
         if (!e.target.closest('button')) {
-          collapse.classList.toggle("open");
+          if (collapse.style.maxHeight) {
+            collapse.style.maxHeight = null;
+            collapse.style.padding = "0 2px";
+        } else {
+          collapse.style.maxHeight = collapse.scrollHeight + "px";
+          collapse.style.padding = "10px 2px";
         }
-      });
+      }
+    });
+
 
 
       filmList.appendChild(row);
