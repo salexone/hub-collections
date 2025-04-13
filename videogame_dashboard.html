@@ -173,17 +173,24 @@
       }
     });
 
-    async function loadGames() {
-      const q = query(collection(db, "videogames"), orderBy("title"));
-      const snapshot = await getDocs(q);
-      snapshot.forEach(docSnap => {
-        const data = docSnap.data();
-        const id = docSnap.id;
-        if (data.ownerId && data.ownerId !== uid) return;
-        gameData.push({ id, ...data });
-      });
-      displayGames();
-    }
+    import { where } from "https://www.gstatic.com/firebasejs/9.6.11/firebase-firestore.js";
+
+async function loadGames() {
+  const q = query(
+    collection(db, "videogames"),
+    where("ownerId", "==", uid),
+    orderBy("title")
+  );
+  const snapshot = await getDocs(q);
+  gameData = []; // Reset in case user reloads
+  snapshot.forEach(docSnap => {
+    const data = docSnap.data();
+    const id = docSnap.id;
+    gameData.push({ id, ...data });
+  });
+  displayGames();
+}
+
 
     function displayGames(filtered = gameData) {
       gameList.innerHTML = "";
