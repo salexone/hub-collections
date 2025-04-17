@@ -15,6 +15,7 @@
 .dropdown {
   float: left;
   overflow: hidden;
+  text-align:center;
 }
 .menu-title{
   float: left;
