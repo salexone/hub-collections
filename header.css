@@ -3,8 +3,7 @@
   align-items: center;
   background-color: #333;
   padding: 10px;
-  gap: 20px; /* space between items */
-  flex-wrap: nowrap;
+  gap: 20px;
 }
 
 .menu-title {
@@ -19,11 +18,11 @@
   color: white;
   text-decoration: none;
   font-size: 16px;
-  margin: 0;
 }
 
 .dropdown {
   position: relative;
+  display: inline-block; /* <-- important */
 }
 
 .dropbtn {
@@ -36,6 +35,11 @@
   font-family: inherit;
 }
 
+.navbar a {
+  padding: 14px 16px;
+  display: inline-block;
+}
+
 .navbar a:hover,
 .dropdown:hover .dropbtn {
   background-color: red;
@@ -44,7 +48,7 @@
 .dropdown-content {
   display: none;
   position: absolute;
-  top: 100%; /* show dropdown below the button */
+  top: 100%;
   left: 0;
   background-color: #f9f9f9;
   min-width: 160px;
