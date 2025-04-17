@@ -16,7 +16,11 @@
   float: left;
   overflow: hidden;
 }
-
+.menu-title{
+  float: left;
+  color:white;
+  text-align:center;
+}
 .dropdown .dropbtn {
   font-size: 16px;  
   border: none;
@@ -59,7 +63,4 @@
 .dropdown:hover .dropdown-content {
   display: block;
 }
-.menu-title{
-  color:white;
-  text-align:center;
-}
+
