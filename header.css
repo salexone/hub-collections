@@ -2,8 +2,11 @@
   display: flex;
   align-items: center;
   background-color: #333;
-  padding: 10px;
   gap: 20px;
+  padding-top: 0px;
+  padding-right: 5px;
+  padding-bottom: 0px;
+  padding-left: 30px;
 }
 
 .menu-title {
