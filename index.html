@@ -88,6 +88,21 @@
         window.location.href = "film_dashboard.html";
       }
     });
+    
+  function onSignIn(googleUser) {
+    const profile = googleUser.getBasicProfile();
+    const avatarUrl = profile.getImageUrl();
+    const name = profile.getName();
+
+    // Save to localStorage
+    localStorage.setItem("userAvatar", avatarUrl);
+    localStorage.setItem("userName", name);
+
+    // Redirect to home page
+    window.location.href = "index.html";
+  }
+
+
   </script>
 </body>
 </html>
