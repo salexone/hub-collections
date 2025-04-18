@@ -79,41 +79,46 @@
   display: block;
 }
 
-/* Avatar (right side) */
 .avatar-container {
-  position: relative;
+  margin-left: auto;
+  padding-right: 20px;
 }
 
-#user-avatar {
-  width: 40px;
-  height: 40px;
+.avatar-dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+.avatar-img {
+  width: 32px;
+  height: 32px;
   border-radius: 50%;
   cursor: pointer;
 }
 
-/* Avatar dropdown */
-.avatar-dropdown {
+.avatar-dropdown-content {
   display: none;
   position: absolute;
   right: 0;
-  top: 50px;
-  background-color: #f9f9f9;
+  background-color: white;
+  min-width: 120px;
   box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2);
-  padding: 10px;
-  border-radius: 6px;
-  z-index: 20;
+  z-index: 100;
+  border-radius: 8px;
 }
 
-.avatar-container:hover .avatar-dropdown {
+.avatar-dropdown-content a {
+  display: block;
+  padding: 10px;
+  color: #333;
+  text-decoration: none;
+}
+
+.avatar-dropdown-content a:hover {
+  background-color: #eee;
+}
+
+.avatar-dropdown:hover .avatar-dropdown-content {
   display: block;
 }
 
-#logout-btn {
-  background-color: red;
-  color: white;
-  border: none;
-  padding: 8px 12px;
-  font-size: 14px;
-  cursor: pointer;
-  border-radius: 4px;
-}
