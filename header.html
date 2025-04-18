@@ -56,30 +56,49 @@
 
   <!-- Right side: Avatar -->
   <div class="avatar-container">
-    <img id="user-avatar" src="https://via.placeholder.com/40" alt="User Avatar" />
-    <div class="avatar-dropdown">
-      <button id="logout-btn">Logout</button>
+  <div class="avatar-dropdown">
+    <img id="user-avatar" src="https://via.placeholder.com/40" alt="User Avatar" class="avatar-img" />
+    <div class="avatar-dropdown-content">
+      <a href="#" id="logout-btn">Logout</a>
     </div>
   </div>
 </div>
 
-<script src="https://accounts.google.com/gsi/client" async defer></script>
-<script>
-  window.onload = function () {
-    // Get the token from local storage (assuming you stored it on login)
-    const user = JSON.parse(localStorage.getItem("googleUser"));
-    
-    if (user && user.picture) {
-      document.getElementById("user-avatar").src = user.picture;
-    }
+</div>
 
-    // Logout logic
-    document.getElementById("logout-btn").addEventListener("click", function () {
-      google.accounts.id.disableAutoSelect();
-      localStorage.removeItem("googleUser");
-      window.location.href = "login.html"; // or wherever your login page is
-    });
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.11/firebase-app.js";
+  import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/9.6.11/firebase-auth.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyCUpzUXiwihGhBzGfGcEzcm1-Zf5gAyj5A",
+    authDomain: "hubcollections-a001e.firebaseapp.com",
+    projectId: "hubcollections-a001e",
+    storageBucket: "hubcollections-a001e.appspot.com",
+    messagingSenderId: "765474227726",
+    appId: "1:765474227726:web:480d8f30ed57cdf77e5e5f"
   };
+
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+
+  onAuthStateChanged(auth, (user) => {
+    if (user) {
+      const avatar = user.photoURL || "https://via.placeholder.com/40";
+      const avatarImg = document.getElementById("user-avatar");
+      avatarImg.src = avatar;
+
+      // Logout handler
+      const logoutBtn = document.getElementById("logout-btn");
+      logoutBtn.addEventListener("click", async () => {
+        await signOut(auth);
+        window.location.href = "login.html";
+      });
+    }
+  });
 </script>
+
+
 
 
