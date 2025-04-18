@@ -1,14 +1,20 @@
 .navbar {
   display: flex;
+  justify-content: space-between;
   align-items: center;
   background-color: #333;
-  gap: 20px;
-  padding-top: 0px;
-  padding-right: 5px;
-  padding-bottom: 0px;
-  padding-left: 30px;
+  padding: 0 20px;
+  height: 60px;
 }
 
+/* Left side container (title + menu) */
+.navbar-left {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+/* Menu title */
 .menu-title {
   color: white;
   font-size: 20px;
@@ -16,33 +22,24 @@
   white-space: nowrap;
 }
 
+/* Menu links and dropdowns */
+.navbar-menu {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
 .navbar a,
-.dropdown {
+.dropdown .dropbtn {
   color: white;
-  text-decoration: none;
-  font-size: 16px;
-  border-radius: 0;
-}
-
-.dropdown {
-  position: relative;
-  display: inline-block; /* <-- important */
-}
-
-.dropbtn {
-  background-color: inherit;
-  color: white;
-  font-size: 16px;
+  background: none;
   border: none;
-  border-radius: 0;
+  font-size: 16px;
+  text-decoration: none;
   padding: 14px 16px;
   cursor: pointer;
   font-family: inherit;
-}
-
-.navbar a {
-  padding: 14px 16px;
-  display: inline-block;
+  border-radius: 0;
 }
 
 .navbar a:hover,
@@ -50,21 +47,26 @@
   background-color: red;
 }
 
+/* Dropdown menus */
+.dropdown {
+  position: relative;
+}
+
 .dropdown-content {
   display: none;
   position: absolute;
   top: 100%;
   left: 0;
-  background-color: #f9f9f9;
   min-width: 160px;
-  box-shadow: 0px 8px 16px rgba(0,0,0,0.2);
-  z-index: 1;
+  background-color: #f9f9f9;
+  box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2);
+  z-index: 10;
 }
 
 .dropdown-content a {
   display: block;
-  padding: 12px 16px;
   color: black;
+  padding: 12px 16px;
   text-decoration: none;
   text-align: left;
 }
@@ -76,45 +78,42 @@
 .dropdown:hover .dropdown-content {
   display: block;
 }
-.user-profile {
-  margin-left: auto;
+
+/* Avatar (right side) */
+.avatar-container {
   position: relative;
-  display: flex;
-  align-items: center;
-  cursor: pointer;
 }
 
 #user-avatar {
   width: 40px;
   height: 40px;
   border-radius: 50%;
-  object-fit: cover;
-  border: 2px solid white;
+  cursor: pointer;
 }
 
-.user-dropdown {
+/* Avatar dropdown */
+.avatar-dropdown {
   display: none;
   position: absolute;
   right: 0;
-  top: 110%;
+  top: 50px;
   background-color: #f9f9f9;
-  min-width: 120px;
-  box-shadow: 0 8px 16px rgba(0,0,0,0.2);
-  z-index: 1;
+  box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2);
+  padding: 10px;
+  border-radius: 6px;
+  z-index: 20;
+}
+
+.avatar-container:hover .avatar-dropdown {
+  display: block;
+}
+
+#logout-btn {
+  background-color: red;
+  color: white;
+  border: none;
+  padding: 8px 12px;
+  font-size: 14px;
+  cursor: pointer;
   border-radius: 4px;
-}
-
-.user-dropdown a {
-  display: block;
-  padding: 10px 14px;
-  color: black;
-  text-decoration: none;
-}
-
-.user-dropdown a:hover {
-  background-color: #ddd;
-}
-
-.user-profile:hover .user-dropdown {
-  display: block;
 }
