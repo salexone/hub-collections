@@ -57,3 +57,22 @@
 </div>
   </div>
 </div>
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const avatarImg = document.getElementById("user-avatar");
+    const avatarUrl = localStorage.getItem("userAvatar");
+
+    if (avatarUrl && avatarImg) {
+      avatarImg.src = avatarUrl;
+    }
+
+    // Optional: handle logout
+    document.getElementById("logout-btn")?.addEventListener("click", () => {
+      localStorage.clear(); // or just remove specific keys
+      // Optional: call Google logout
+      // Redirect to login page
+      window.location.href = "login.html";
+    });
+  });
+</script>
+
