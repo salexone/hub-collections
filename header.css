@@ -76,3 +76,45 @@
 .dropdown:hover .dropdown-content {
   display: block;
 }
+.user-profile {
+  margin-left: auto;
+  position: relative;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+}
+
+#user-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid white;
+}
+
+.user-dropdown {
+  display: none;
+  position: absolute;
+  right: 0;
+  top: 110%;
+  background-color: #f9f9f9;
+  min-width: 120px;
+  box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+  z-index: 1;
+  border-radius: 4px;
+}
+
+.user-dropdown a {
+  display: block;
+  padding: 10px 14px;
+  color: black;
+  text-decoration: none;
+}
+
+.user-dropdown a:hover {
+  background-color: #ddd;
+}
+
+.user-profile:hover .user-dropdown {
+  display: block;
+}
