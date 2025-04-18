@@ -1,62 +1,68 @@
+<!-- menu.html -->
 <div class="navbar">
-  <div class="menu-title">HUB COLLECTIONS</div>
+  <!-- Left side: Title and Menu -->
+  <div class="navbar-left">
+    <div class="menu-title">HUB COLLECTIONS</div>
 
-  <div class="navbar-menu">
-    <a href="index.html"><i class="fa-solid fa-igloo" style="color: #ffffff;"></i> Home</a>
+    <div class="navbar-menu">
+      <a href="index.html"><i class="fa-solid fa-igloo" style="color: #ffffff;"></i> Home</a>
 
-    <div class="dropdown">
-      <button class="dropbtn"><i class="fa-solid fa-film" style="color: #ffffff;"></i> Filmes</button>
-      <div class="dropdown-content">
-        <a href="add_film.html"><i class="fa-solid fa-plus" style="color: #1e3050;"></i> Adicionar</a>
-        <a href="film_dashboard.html"><i class="fa-solid fa-clipboard-list"></i> Lista</a>
-        <a href=""><i class="fa-solid fa-heart"></i> Desejos</a>
+      <div class="dropdown">
+        <button class="dropbtn"><i class="fa-solid fa-film"></i> Filmes</button>
+        <div class="dropdown-content">
+          <a href="add_film.html"><i class="fa-solid fa-plus"></i> Adicionar</a>
+          <a href="film_dashboard.html"><i class="fa-solid fa-clipboard-list"></i> Lista</a>
+          <a href="#"><i class="fa-solid fa-heart"></i> Desejos</a>
+        </div>
+      </div>
+
+      <div class="dropdown">
+        <button class="dropbtn"><i class="fa-solid fa-gamepad"></i> Videojogos</button>
+        <div class="dropdown-content">
+          <a href="add_videogame.html"><i class="fa-solid fa-plus"></i> Adicionar</a>
+          <a href="videogame_dashboard.html"><i class="fa-solid fa-clipboard-list"></i> Lista</a>
+          <a href="#"><i class="fa-solid fa-heart"></i> Desejos</a>
+        </div>
+      </div>
+
+      <div class="dropdown">
+        <button class="dropbtn"><i class="fa-solid fa-book"></i> Livros</button>
+        <div class="dropdown-content">
+          <a href="#"><i class="fa-solid fa-plus"></i> Adicionar</a>
+          <a href="#"><i class="fa-solid fa-clipboard-list"></i> Lista</a>
+          <a href="#"><i class="fa-solid fa-heart"></i> Desejos</a>
+        </div>
+      </div>
+
+      <div class="dropdown">
+        <button class="dropbtn"><i class="fa-solid fa-receipt"></i> Comics</button>
+        <div class="dropdown-content">
+          <a href="#"><i class="fa-solid fa-plus"></i> Adicionar</a>
+          <a href="#"><i class="fa-solid fa-clipboard-list"></i> Lista</a>
+          <a href="#"><i class="fa-solid fa-heart"></i> Desejos</a>
+        </div>
+      </div>
+
+      <div class="dropdown">
+        <button class="dropbtn"><i class="fa-solid fa-music"></i> Música</button>
+        <div class="dropdown-content">
+          <a href="#"><i class="fa-solid fa-plus"></i> Adicionar</a>
+          <a href="#"><i class="fa-solid fa-clipboard-list"></i> Lista</a>
+          <a href="#"><i class="fa-solid fa-heart"></i> Desejos</a>
+        </div>
       </div>
     </div>
+  </div>
 
-    <div class="dropdown">
-      <button class="dropbtn"><i class="fa-solid fa-gamepad" style="color: #ffffff;"></i> Videojogos</button>
-      <div class="dropdown-content">
-        <a href="add_videogame.html"><i class="fa-solid fa-plus" style="color: #1e3050;"></i> Adicionar</a>
-        <a href="videogame_dashboard.html"><i class="fa-solid fa-clipboard-list"></i> Lista</a>
-        <a href=""><i class="fa-solid fa-heart"></i> Desejos</a>
-      </div>
+  <!-- Right side: Avatar -->
+  <div class="avatar-container">
+    <img id="user-avatar" src="https://via.placeholder.com/40" alt="User Avatar" />
+    <div class="avatar-dropdown">
+      <button id="logout-btn">Logout</button>
     </div>
-
-    <div class="dropdown">
-      <button class="dropbtn"><i class="fa-solid fa-book" style="color: #ffffff;"></i> Livros</button>
-      <div class="dropdown-content">
-        <a href=""><i class="fa-solid fa-plus" style="color: #1e3050;"></i> Adicionar</a>
-        <a href=""><i class="fa-solid fa-clipboard-list"></i> Lista</a>
-        <a href=""><i class="fa-solid fa-heart"></i> Desejos</a>
-      </div>
-    </div>
-
-    <div class="dropdown">
-      <button class="dropbtn"><i class="fa-solid fa-receipt" style="color: #ffffff;"></i> Comics</button>
-      <div class="dropdown-content">
-        <a href="add_videogame.html"><i class="fa-solid fa-plus" style="color: #1e3050;"></i> Adicionar</a>
-        <a href="videogame_dashboard.html"><i class="fa-solid fa-clipboard-list"></i> Lista</a>
-        <a href=""><i class="fa-solid fa-heart"></i> Desejos</a>
-      </div>
-    </div>
-
-    <div class="dropdown">
-      <button class="dropbtn"><i class="fa-solid fa-music" style="color: #ffffff;"></i> Música</button>
-      <div class="dropdown-content">
-        <a href="add_videogame.html"><i class="fa-solid fa-plus" style="color: #1e3050;"></i> Adicionar</a>
-        <a href="videogame_dashboard.html"><i class="fa-solid fa-clipboard-list"></i> Lista</a>
-        <a href=""><i class="fa-solid fa-heart"></i> Desejos</a>
-      </div>
-    </div>
-
-    <div class="user-profile">
-      <img id="user-avatar" src="" alt="User Avatar" />
-      <div class="user-dropdown">
-      <a href="#" onclick="logout()">Logout</a>
-    </div>
-</div>
   </div>
 </div>
+
 <script>
   document.addEventListener("DOMContentLoaded", () => {
     const avatarImg = document.getElementById("user-avatar");
