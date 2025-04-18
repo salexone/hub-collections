@@ -63,22 +63,23 @@
   </div>
 </div>
 
+<script src="https://accounts.google.com/gsi/client" async defer></script>
 <script>
-  document.addEventListener("DOMContentLoaded", () => {
-    const avatarImg = document.getElementById("user-avatar");
-    const avatarUrl = localStorage.getItem("userAvatar");
-
-    if (avatarUrl && avatarImg) {
-      avatarImg.src = avatarUrl;
+  window.onload = function () {
+    // Get the token from local storage (assuming you stored it on login)
+    const user = JSON.parse(localStorage.getItem("googleUser"));
+    
+    if (user && user.picture) {
+      document.getElementById("user-avatar").src = user.picture;
     }
 
-    // Optional: handle logout
-    document.getElementById("logout-btn")?.addEventListener("click", () => {
-      localStorage.clear(); // or just remove specific keys
-      // Optional: call Google logout
-      // Redirect to login page
-      window.location.href = "login.html";
+    // Logout logic
+    document.getElementById("logout-btn").addEventListener("click", function () {
+      google.accounts.id.disableAutoSelect();
+      localStorage.removeItem("googleUser");
+      window.location.href = "login.html"; // or wherever your login page is
     });
-  });
+  };
 </script>
+
 
